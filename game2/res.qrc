@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Image/register.jpg</file>
+        <file>Image/login.jpg</file>
+        <file>Image/gamelobby.png</file>
+        <file>Image/userlist.jpg</file>
+        <file>Image/user.png</file>
+        <file>Image/ball.png</file>
+        <file>Image/adc.gif</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GameLobby</class>
+ <widget class="QDialog" name="GameLobby">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1280</width>
+    <height>720</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QLabel" name="User1">
+   <property name="geometry">
+    <rect>
+     <x>617</x>
+     <y>124</y>
+     <width>251</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>       111111111</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="User2">
+   <property name="geometry">
+    <rect>
+     <x>617</x>
+     <y>234</y>
+     <width>251</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>          2222222</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="User3">
+   <property name="geometry">
+    <rect>
+     <x>617</x>
+     <y>350</y>
+     <width>251</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>           333333</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="User4">
+   <property name="geometry">
+    <rect>
+     <x>617</x>
+     <y>462</y>
+     <width>251</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>         444444444</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
