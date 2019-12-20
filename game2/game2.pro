@@ -5,9 +5,9 @@
 #-------------------------------------------------
 
 QT       += core gui
-
+QT += concurrent
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
+LIBS += -lpthread libwsock32 libws2_32
 TARGET = game2
 TEMPLATE = app
 
@@ -30,20 +30,44 @@ SOURCES += \
     register.cpp \
     gamelobby.cpp \
     fightui.cpp \
-    mylabel.cpp
+    mylabel.cpp \
+    clientsocket.cpp \
+    stackwidget.cpp \
+    rankingroom.cpp \
+    waitingroom.cpp \
+    monster.cpp \
+    skill.cpp \
+    player.cpp \
+    monsterfactory.cpp \
+    fightenv.cpp
 
 HEADERS += \
         mainwindow.h \
     register.h \
     gamelobby.h \
     fightui.h \
-    mylabel.h
+    mylabel.h \
+    clientsocket.h \
+    json.hpp \
+    socket.h \
+    protocol.h \
+    stackwidget.h \
+    rankingroom.h \
+    waitingroom.h \
+    fightenv.h \
+    monster.h \
+    player.h \
+    skill.h \
+    monsterfactory.h
 
 FORMS += \
         mainwindow.ui \
     register.ui \
     gamelobby.ui \
-    fightui.ui
+    fightui.ui \
+    stackwidget.ui \
+    rankingroom.ui \
+    waitingroom.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

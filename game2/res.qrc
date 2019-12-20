@@ -7,5 +7,15 @@
         <file>Image/user.png</file>
         <file>Image/ball.png</file>
         <file>Image/adc.gif</file>
+        <file>Image/charizard_left.gif</file>
+        <file>Image/dodrio_left.gif</file>
+        <file>Image/lapras_left.gif</file>
+        <file>Image/talonflame_left.gif</file>
+        <file>Image/charizard.gif</file>
+        <file>Image/dodrio.gif</file>
+        <file>Image/lapras.gif</file>
+        <file>Image/talonflame.gif</file>
+        <file>Image/fightroom.png</file>
+        <file>Image/Fire_left.png</file>
     </qresource>
 </RCC>

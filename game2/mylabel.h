@@ -3,6 +3,12 @@
 
 #include<QLabel>
 #include<QEvent>
+#include<QSize>
+#include<QMovie>
+#include<QDebug>
+#include<QPropertyAnimation>
+
+class QPropertyAnimation;
 
 class MyLabel :public QLabel
 {

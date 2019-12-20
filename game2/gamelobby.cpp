@@ -12,7 +12,7 @@
 #include<QMouseEvent>
 #include <QDebug>
 
-GameLobby::GameLobby(QWidget *parent) :
+GameLobby::GameLobby(ClientSocket *client, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::GameLobby)
 {
@@ -21,22 +21,26 @@ GameLobby::GameLobby(QWidget *parent) :
     //setWindowIcon(QIcon(":/Image/ball.png"));
     //设置标题
     setWindowTitle("游戏大厅");
-    InitUi();
     SetUserList();
+    InitUi();
+
 }
 void GameLobby::InitUi()
 {
-    setFixedSize(1280, 720);
+    this->setFixedSize(1280, 720);
     //导入
 
 }
 void GameLobby::SetUserList()
 {
-
     //设置背景图片
-    QPalette pal = this->palette();
-    pal.setBrush(QPalette::Background,QBrush(QPixmap(":/Image/user.png")));
-    setPalette(pal);
+//    QPalette pal = this->palette();
+//    pal.setBrush(QPalette::Background,QBrush(QPixmap("H:/QT/game2/Image/user.png")));
+//    setPalette(pal);
+    QPixmap img1;
+    img1.load(":/Image/user.png");
+    QPixmap pixMap= img1.scaled(1280,720, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    ui->background->setPixmap(pixMap);
 
     //设置字体字号
     QFont ft("Microsoft YaHei", 20);
@@ -60,10 +64,10 @@ void GameLobby::SetUserList()
 }
 void GameLobby::OpenFightWin()
 {
-    this->hide();//主界面关闭
-    FightUIWin = new FightUI;//新建子界面
-    //connect(FightUIWin,&QPushButton::released,this,GameLobby::reshow());  //【抬起】按钮b2时，修改按钮b2的标题//当点击子界面时，调用主界面的reshow()函数
-    FightUIWin->show();
+//    this->hide();//主界面关闭
+//    FightUIWin = new FightUI(_client);//新建子界面
+//    //connect(FightUIWin,&QPushButton::released,this,GameLobby::reshow());  //【抬起】按钮b2时，修改按钮b2的标题//当点击子界面时，调用主界面的reshow()函数
+//    FightUIWin->show();
 }
 void GameLobby::mousePressEvent(QMouseEvent *event)
 {
@@ -99,7 +103,8 @@ void GameLobby::mousePressEvent(QMouseEvent *event)
     {
         if(1)//对方接受你的请求,连接到同一个房间
         {
-            OpenFightWin();
+            //OpenFightWin();
+            emit clicked(1);
         }
         else {//弹窗提示拒接
 
@@ -119,4 +124,9 @@ void GameLobby::reshow(){
 GameLobby::~GameLobby()
 {
     delete ui;
+}
+
+void GameLobby::on_rankButton_clicked()
+{
+    emit clicked(2);
 }

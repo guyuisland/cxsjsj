@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>       111111111</string>
+    <string/>
    </property>
   </widget>
   <widget class="QLabel" name="User2">
@@ -36,7 +36,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>          2222222</string>
+    <string/>
    </property>
   </widget>
   <widget class="QLabel" name="User3">
@@ -49,7 +49,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>           333333</string>
+    <string/>
    </property>
   </widget>
   <widget class="QLabel" name="User4">
@@ -62,9 +62,50 @@
     </rect>
    </property>
    <property name="text">
-    <string>         444444444</string>
+    <string/>
    </property>
   </widget>
+  <widget class="QPushButton" name="rankButton">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>500</y>
+     <width>101</width>
+     <height>71</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>RankingRoom</string>
+   </property>
+   <property name="autoDefault">
+    <bool>true</bool>
+   </property>
+   <property name="default">
+    <bool>false</bool>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="background">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1280</width>
+     <height>720</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <zorder>background</zorder>
+  <zorder>User1</zorder>
+  <zorder>User2</zorder>
+  <zorder>User3</zorder>
+  <zorder>User4</zorder>
+  <zorder>rankButton</zorder>
  </widget>
  <resources/>
  <connections/>
