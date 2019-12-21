@@ -1,17 +1,24 @@
 ﻿#ifndef FIGHTENV_H
 #define FIGHTENV_H
 
+#include <QDialog>
+#include <QFutureWatcher>
+#include <QtConcurrent>
+#include <QLabel>
 #include"player.h"
 #include"monsterfactory.h"
 #include "clientsocket.h"
-#include <QFutureWatcher>
-#include <QtConcurrent>
-#include<QObject>
 
-class Fightenv
+namespace Ui {
+class Fightenv;
+}
+
+class Fightenv : public QDialog
 {
+    Q_OBJECT
+
 public:
-    Fightenv(ClientSocket *);
+    explicit Fightenv(ClientSocket *, QWidget *parent = nullptr);
     Fightenv(Player& , Player&);
     ~Fightenv();
     /*xxx(){
@@ -40,9 +47,11 @@ public:
     //根据UI获得选择转到相应处理逻辑
     void dispatch(int , int , int );
 
+
 private slots:
     void round_handle();
 
+    void round_result();
 
 private:
     void summon_summon(json&,json&);
@@ -74,6 +83,7 @@ private:
 
     void send_choice(json&);
 
+    Ui::Fightenv *ui;
     Player me;
     Player opponent;
     int round;//当前回合数

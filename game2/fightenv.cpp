@@ -1,8 +1,10 @@
 ﻿#include "fightenv.h"
-#include <QLabel>
+#include "ui_fightenv.h"
 
-Fightenv::Fightenv(ClientSocket *client):
-    _client(client)
+
+Fightenv::Fightenv(ClientSocket *client, QWidget *parent):
+    _client(client),
+    ui(new Ui::Fightenv)
 {
     monsterFactory = new MonsterFactory;
 }
@@ -99,54 +101,82 @@ void Fightenv::surrender_handle()
 
 void Fightenv::send_choice(json& sendInfo)
 {
-//    std::string (ClientSocket::*p)(std::string) = &ClientSocket::Send_Recv;
-//    strWatcherPtr = new QFutureWatcher<std::string>;
-//    QFuture<std::string> ret = QtConcurrent::run(_client, p, sendInfo.dump());
-//    connect(strWatcherPtr, SIGNAL(finished()), this, SLOT(invite_handle()));
-
-//    strWatcherPtr->setFuture(ret);
+    std::string (ClientSocket::*p)(std::string) = &ClientSocket::Send_Recv;
+    strWatcherPtr = new QFutureWatcher<std::string>;
+    QFuture<std::string> ret = QtConcurrent::run(_client, p, sendInfo.dump());
+    connect(strWatcherPtr, SIGNAL(finished()), this, SLOT(round_handle()));
+    strWatcherPtr->setFuture(ret);
 }
+
 
 void Fightenv::round_handle(){
     json recvInfo = strWatcherPtr->result();
+    disconnect(strWatcherPtr, SIGNAL(finished()), this, SLOT(round_handle()));
+    delete strWatcherPtr;
+
     cmp_excute(jsBuf,recvInfo);
     int res=game_over();
-    if(res==1 || res == 4){
-        //send(win);
-        //recv(recvBuf);
-        //Sleep();
-        //exit;
-        json nextInfo;
-        nextInfo["define"] = WIN;
-        nextInfo["myName"] = me.get_name();
-        nextInfo["oppName"] = opponent.get_name();
-        _client->Send_Recv(jsBuf.dump());
-    }
-    else if(res==2 || res == 3){
-        //send(lose);
-        //recv(recvBuf);
-        //Sleep();
-        //exit;
-        json nextInfo;
-        nextInfo["define"] = LOSE;
-        nextInfo["myName"] = me.get_name();
-        nextInfo["oppName"] = opponent.get_name();
-        _client->Send_Recv(jsBuf.dump());
-    }
-    else if(res == 5)
+    if(res != 0)
     {
-        //send(fair);
-        //recv(recvBuf);
-        //Sleep();
-        //exit;
         json nextInfo;
-        nextInfo["define"] = FAIR;
-        nextInfo["myName"] = me.get_name();
-        nextInfo["oppName"] = opponent.get_name();
-        _client->Send_Recv(jsBuf.dump());
+        if(res==1 || res == 4){
+            //send(win);
+            //recv(recvBuf);
+            //Sleep();
+            //exit;
+
+            nextInfo["define"] = WIN;
+            nextInfo["myName"] = me.get_name();
+            nextInfo["oppName"] = opponent.get_name();
+            //_client->Send_Recv(jsBuf.dump());
+        }
+        else if(res==2 || res == 3){
+            //send(lose);
+            //recv(recvBuf);
+            //Sleep();
+            //exit;
+
+            nextInfo["define"] = LOSE;
+            nextInfo["myName"] = me.get_name();
+            nextInfo["oppName"] = opponent.get_name();
+            //_client->Send_Recv(jsBuf.dump());
+        }
+        else if(res == 5)
+        {
+            //send(fair);
+            //recv(recvBuf);
+            //Sleep();
+            //exit;
+
+            nextInfo["define"] = FAIR;
+            nextInfo["myName"] = me.get_name();
+            nextInfo["oppName"] = opponent.get_name();
+            //_client->Send_Recv(jsBuf.dump());
+        }
+
+        std::string (ClientSocket::*p)(std::string) = &ClientSocket::Send_Recv;
+        strWatcherPtr = new QFutureWatcher<std::string>;
+        QFuture<std::string> ret = QtConcurrent::run(_client, p, nextInfo.dump());
+        connect(strWatcherPtr, SIGNAL(finished()), this, SLOT(round_result()));
+        strWatcherPtr->setFuture(ret);
     }
 
+    //进入下一回合
     //draw();
+
+}
+
+void Fightenv::round_result()
+{
+    json recvInfo = strWatcherPtr->result();
+    disconnect(strWatcherPtr, SIGNAL(finished()), this, SLOT(round_result()));
+    delete strWatcherPtr;
+
+    if(recvInfo["define"] == OK)
+    {
+        //游戏结束，回到大厅
+    }
+
 }
 
 void Fightenv::cmp_excute(json& sendInfo, json& recvInfo){

@@ -55,11 +55,11 @@ HEADERS += \
     stackwidget.h \
     rankingroom.h \
     waitingroom.h \
-    fightenv.h \
     monster.h \
     player.h \
     skill.h \
-    monsterfactory.h
+    monsterfactory.h \
+    fightenv.h
 
 FORMS += \
         mainwindow.ui \
@@ -68,7 +68,8 @@ FORMS += \
     fightui.ui \
     stackwidget.ui \
     rankingroom.ui \
-    waitingroom.ui
+    waitingroom.ui \
+    fightenv.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

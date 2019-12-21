@@ -7,7 +7,7 @@
 #include<QPixmap>
 #include<QBitmap>
 #include <QMouseEvent>
-#include "MyLabel.h"
+#include "mylabel.h"
 #include "clientsocket.h"
 #include "fightenv.h"
 #include "player.h"
