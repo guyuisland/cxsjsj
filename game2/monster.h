@@ -1,9 +1,13 @@
-#pragma once
+﻿#ifndef MONSTER_H
+#define MONSTER_H
+
+
 #include<iostream>
 #include<string>
 #include<vector>
 #include<fstream>
 #include"skill.h"
+#include"protocol.h"
 class Monster
 {
 public:
@@ -12,6 +16,7 @@ public:
     int get_HP();
     bool dec_HP(int num);
     void add_HP(int num);
+    int has_obj(int);
     virtual Skill skill1() = 0;
     virtual Skill skill2() = 0;
     virtual Skill skill3() = 0;
@@ -21,7 +26,7 @@ protected:
 	int energyCost;
 	int callTimes;
 	std::string name;
-    //std::vector<Skill> skills;
+    std::vector<Skill> skills;
 };
 
 class Mage: public Monster
@@ -34,7 +39,7 @@ public:
     Skill skill3() override;
 
 private:
-    std::vector<Skill> skills;
+    //std::vector<Skill> skills;
 };
 
 class Sprite: public Monster
@@ -46,7 +51,7 @@ public:
     Skill skill2() override;
     Skill skill3() override;
 private:
-    std::vector<Skill> skills;
+    //std::vector<Skill> skills;
 };
 
 class Pegasus: public Monster
@@ -58,7 +63,7 @@ public:
     Skill skill2() override;
     Skill skill3() override;
 private:
-    std::vector<Skill> skills;
+    //std::vector<Skill> skills;
 };
 
 class Scorpicore: public Monster
@@ -70,7 +75,7 @@ public:
     Skill skill2() override;
     Skill skill3() override;
 private:
-    std::vector<Skill> skills;
+    //std::vector<Skill> skills;
 };
 
 class Phoenix: public Monster
@@ -82,7 +87,7 @@ public:
     Skill skill2() override;
     Skill skill3() override;
 private:
-    std::vector<Skill> skills;
+    //std::vector<Skill> skills;
 };
 
 class Knight: public Monster
@@ -94,7 +99,8 @@ public:
     Skill skill2() override;
     Skill skill3() override;
 private:
-    std::vector<Skill> skills;
+    //std::vector<Skill> skills;
 };
 
+#endif //MONSTER_H
 

@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>70</x>
-     <y>20</y>
+     <y>90</y>
      <width>200</width>
      <height>200</height>
     </rect>
@@ -33,7 +33,7 @@
    <property name="geometry">
     <rect>
      <x>160</x>
-     <y>190</y>
+     <y>260</y>
      <width>200</width>
      <height>200</height>
     </rect>
@@ -49,7 +49,7 @@
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>350</y>
+     <y>420</y>
      <width>200</width>
      <height>200</height>
     </rect>
@@ -65,7 +65,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>240</y>
+     <y>310</y>
      <width>100</width>
      <height>100</height>
     </rect>
@@ -81,7 +81,7 @@
    <property name="geometry">
     <rect>
      <x>1150</x>
-     <y>240</y>
+     <y>300</y>
      <width>100</width>
      <height>100</height>
     </rect>
@@ -97,7 +97,7 @@
    <property name="geometry">
     <rect>
      <x>960</x>
-     <y>350</y>
+     <y>410</y>
      <width>200</width>
      <height>200</height>
     </rect>
@@ -113,7 +113,7 @@
    <property name="geometry">
     <rect>
      <x>870</x>
-     <y>190</y>
+     <y>250</y>
      <width>200</width>
      <height>200</height>
     </rect>
@@ -129,7 +129,7 @@
    <property name="geometry">
     <rect>
      <x>970</x>
-     <y>20</y>
+     <y>80</y>
      <width>200</width>
      <height>200</height>
     </rect>
@@ -290,7 +290,7 @@
    <property name="geometry">
     <rect>
      <x>180</x>
-     <y>355</y>
+     <y>425</y>
      <width>169</width>
      <height>40</height>
     </rect>
@@ -316,7 +316,7 @@
    <property name="geometry">
     <rect>
      <x>100</x>
-     <y>520</y>
+     <y>590</y>
      <width>169</width>
      <height>40</height>
     </rect>
@@ -342,7 +342,7 @@
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>190</y>
+     <y>260</y>
      <width>169</width>
      <height>40</height>
     </rect>
@@ -368,7 +368,7 @@
    <property name="geometry">
     <rect>
      <x>970</x>
-     <y>520</y>
+     <y>580</y>
      <width>169</width>
      <height>40</height>
     </rect>
@@ -394,7 +394,7 @@
    <property name="geometry">
     <rect>
      <x>880</x>
-     <y>350</y>
+     <y>410</y>
      <width>169</width>
      <height>40</height>
     </rect>
@@ -420,7 +420,7 @@
    <property name="geometry">
     <rect>
      <x>1000</x>
-     <y>180</y>
+     <y>240</y>
      <width>169</width>
      <height>40</height>
     </rect>
@@ -446,7 +446,7 @@
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>340</y>
+     <y>410</y>
      <width>169</width>
      <height>40</height>
     </rect>
@@ -472,7 +472,7 @@
    <property name="geometry">
     <rect>
      <x>1120</x>
-     <y>330</y>
+     <y>390</y>
      <width>169</width>
      <height>40</height>
     </rect>
@@ -511,7 +511,7 @@
    <property name="geometry">
     <rect>
      <x>920</x>
-     <y>330</y>
+     <y>390</y>
      <width>71</width>
      <height>20</height>
     </rect>
@@ -521,6 +521,115 @@
    </property>
    <property name="text">
     <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="me">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>10</y>
+     <width>300</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Box</enum>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="enemy">
+   <property name="geometry">
+    <rect>
+     <x>930</x>
+     <y>10</y>
+     <width>300</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::Box</enum>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QWidget" name="widget_10" native="true">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>50</y>
+     <width>261</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_10">
+    <item>
+     <widget class="QLabel" name="label_9">
+      <property name="font">
+       <font>
+        <family>Consolas</family>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>MP:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QProgressBar" name="myMP">
+      <property name="value">
+       <number>24</number>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="widget_11" native="true">
+   <property name="geometry">
+    <rect>
+     <x>960</x>
+     <y>50</y>
+     <width>261</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout_11">
+    <item>
+     <widget class="QLabel" name="label_10">
+      <property name="font">
+       <font>
+        <family>Consolas</family>
+        <pointsize>14</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>MP:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QProgressBar" name="enemyMP">
+      <property name="value">
+       <number>24</number>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>560</x>
+     <y>510</y>
+     <width>93</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>提交</string>
    </property>
   </widget>
   <zorder>BackGround</zorder>
@@ -545,6 +654,11 @@
   <zorder>widget_9</zorder>
   <zorder>mymonSkill_1</zorder>
   <zorder>monSelect1</zorder>
+  <zorder>me</zorder>
+  <zorder>enemy</zorder>
+  <zorder>widget_10</zorder>
+  <zorder>widget_11</zorder>
+  <zorder>pushButton</zorder>
  </widget>
  <customwidgets>
   <customwidget>

@@ -4,7 +4,7 @@
 /*--------------------请求类型------------------------*/
 #define LOG_IN              2       // 登陆请求
 #define SIGN_UP             3       // 注册请求
-#define GET_ONLINE_LIST     4       // 获取在线列表请求
+#define GET_WAITING_LIST     4       // 获取在线列表请求
 #define GET_RANKING       5       // 获取排行榜请求
 #define READY       7       //进入等待室
 #define INVITE      8       // 邀请玩家请求
@@ -19,7 +19,8 @@
 #define SURRENDER      25      // 投降
 #define WIN         26      //胜利
 #define LOSE        27      //失败
-#define SKILL       28      //使用技能
+#define FAIR        28      //平局
+#define SKILL       29      //使用技能
 
 #define ATTACK_PLAYER      30       // 攻击玩家本体
 #define ATTACK_1      31       // 攻击1号位置的怪兽

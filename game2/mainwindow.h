@@ -48,6 +48,7 @@ private:
     ClientSocket* clientSocket;
     //int conn_code;//是否连接成功
     StackWidget* _stackWidget;
+    QFutureWatcher<int> *wp ;
 };
 
 #endif // MAINWINDOW_H

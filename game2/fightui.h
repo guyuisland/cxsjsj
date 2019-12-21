@@ -9,6 +9,8 @@
 #include <QMouseEvent>
 #include "MyLabel.h"
 #include "clientsocket.h"
+#include "fightenv.h"
+#include "player.h"
 
 
 namespace Ui {
@@ -23,11 +25,15 @@ public:
     explicit FightUI(ClientSocket *client, QWidget *parent = nullptr);
     ~FightUI();
     bool eventFilter(QObject *obj, QEvent *event);	// 添加时间过滤器声明
+    void init_player(QString &, QString &, int , int);
 signals:
     void sendsignal();
+    void clicked(int );
 
 private slots:
     void hide_ski_anm();
+    void on_pushButton_clicked();
+
 private:
     Ui::FightUI *ui;
     void InitUi();
@@ -40,6 +46,7 @@ private:
     void renew_enemy_monster();
     void show_blood();
     void get_add(QMovie *movie, int seq);
+
     MyLabel *myLabel;
     QPixmap PixmapToRound(const QPixmap &src, int radius);
     QString skill[4] ={"1","2","3","4"};
@@ -62,6 +69,13 @@ private:
     int eneMonSelect = -1;
     //void enterEvent(QEvent *event);
     QTimer *timer;
+    Fightenv *fightEnv;//记录战斗场面信息
+    void submit();
+
+    int have_object();
+    int costmonster = 2;
+    int num = 2;
+    int monsterselect = 0;
 };
 
 #endif // FIGHTUI_H

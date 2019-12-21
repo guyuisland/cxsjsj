@@ -1,12 +1,17 @@
-#ifndef FIGHTENV_H
+﻿#ifndef FIGHTENV_H
 #define FIGHTENV_H
 
 #include"player.h"
 #include"monsterfactory.h"
+#include "clientsocket.h"
+#include <QFutureWatcher>
+#include <QtConcurrent>
+#include<QObject>
 
 class Fightenv
 {
 public:
+    Fightenv(ClientSocket *);
     Fightenv(Player& , Player&);
     ~Fightenv();
     /*xxx(){
@@ -19,9 +24,26 @@ public:
      *
      * }
     */
-    void handle();
+    void set_players(Player , Player);
+
     void cmp_excute(json&,json&);
     int game_over();
+    void attack_handle(int);
+    void defend_handle();
+    void acc_handle();
+    void summon_handle(int );
+    void skill_handle(int , int, int);
+    void surrender_handle();
+
+    int has_obj(int , int);
+
+    //根据UI获得选择转到相应处理逻辑
+    void dispatch(int , int , int );
+
+private slots:
+    void round_handle();
+
+
 private:
     void summon_summon(json&,json&);
     void summon_attack(json&,json&);
@@ -50,10 +72,15 @@ private:
 
     void surrender_surrender(json&,json&);
 
+    void send_choice(json&);
+
     Player me;
     Player opponent;
     int round;//当前回合数
     MonsterFactory* monsterFactory;
+    ClientSocket *_client;
+    QFutureWatcher<std::string> *strWatcherPtr;
+    json jsBuf;
 };
 
 #endif // FIGHTENV_H

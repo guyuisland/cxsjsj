@@ -15,7 +15,9 @@ public:
     ClientSocket(string name="unknow");
     ~ClientSocket();
     int Connect();
-    string Send(string sendInfo);
+    string Send_Recv(string sendInfo);
+    void single_send(string sendInfo);
+    string single_recv();
     string get_user_name();
 private:
     //当前与服务器通信的socket

@@ -18,18 +18,17 @@ FightUI::FightUI(ClientSocket *client, QWidget *parent) :
     InitUi();
     timer = new QTimer;
     connect(timer, SIGNAL(timeout()), this, SLOT(hide_ski_anm()));
-    //myLabel->setStyleSheet("background-color:rgb(100,150,150)"); //设置背景颜色
-    //myLabel->setGeometry(QRect(100,100,300,80)); //设置位置和大小
-   // myLabel->show();  //显示控件
+    fightEnv = new Fightenv(_client);
+
     renew_enemy_monster();
-//    QMovie *movie = new QMovie(":/Image/charizard_left.gif");
-//    ui->test->setMovie(movie);
-//    //设置图片的大小
-//    ui->test->setScaledContents(true);
-//    //movie->setScaledSize(QSize(100,100));
-//    movie->start();
-//    //ui->test->resize(200,200);
 }
+
+void FightUI::init_player(QString &myName, QString &oppName, int myLv, int oppLv)
+{
+    fightEnv->set_players(Player(myName.toStdString(), myLv), Player(oppName.toStdString(), oppLv));
+}
+
+
 QPixmap FightUI::PixmapToRound(const QPixmap &src, int radius)
 {
     if (src.isNull()) {
@@ -186,6 +185,11 @@ void FightUI::InitUi()
     ui->eneMonblood_2->setStyleSheet(qss);
     ui->eneMonblood_3->setStyleSheet(qss);
 
+    qss = "QProgressBar {border-radius: 5px;background: #FFFFFF;text-align: center;}"
+            "QProgressBar::chunk {border-radius:5px;border:1px solid black;background:#3498db;}";
+    ui->myMP->setStyleSheet(qss);
+    ui->enemyMP->setStyleSheet(qss);
+
     /*开局把所有东西隐藏起来*/
     ui->myMonblood_1->setVisible(false);
     ui->myMonblood_2->setVisible(false);
@@ -194,6 +198,8 @@ void FightUI::InitUi()
     ui->eneMonblood_2->setVisible(false);
     ui->eneMonblood_3->setVisible(false);
     ui->monSelect1->setVisible(false);
+    ui->myMP->setValue(0);
+    ui->enemyMP->setValue(0);
 
     /*把百分之多少去掉*/
     /*ui->myBlood->setTextVisible(false);
@@ -222,14 +228,7 @@ void FightUI::InitUi()
     img2.load(":/Image/fightroom.png");
     QPixmap pixMap2= img2.scaled(1280,720, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     ui->BackGround->setPixmap(pixMap2);
-//    QPixmap img3;
-//    img3.load(":/Image/gamelobby.png");
-//    ui->monSelect1->setPixmap(img3);
-    /*label中画图*/
-    /*QPixmap pixmap(":/Image/adc.gif");
-    ui->monster1->setPixmap(pixmap);
-    ui->monster1->show();
-*/
+
 
     QMovie *movie = new QMovie(":/Image/charizard_left.gif");
     ui->summon_monster0->setMovie(movie);
@@ -318,17 +317,36 @@ void FightUI::skill_des(int seq)
         ui->skill3->setText(skill[3]);
     }
 }
+void FightUI::submit()
+{
+
+}
 void FightUI::use_skill()
 {
-    if(ObjectSelect == 0 && SkillSelect == 3 && monsterNum <= 3)//召唤
+    if(ObjectSelect == 0  && monsterNum <= 3)//召唤
     {
-        show_summon();
-        show_blood();
+        if(SkillSelect == 3)
+        {
+            show_summon();
+        }
+        else if(SkillSelect == 2)
+        {
+
+        }
+        else if(SkillSelect == 1)
+        {
+
+        }
+        else if(SkillSelect == 0)
+        {
+
+        }
     }
     if(ObjectSelect != 0)
     {
         attack();
     }
+    show_blood();
 }
 
 bool FightUI::eventFilter(QObject *obj, QEvent *event)
@@ -446,8 +464,12 @@ bool FightUI::eventFilter(QObject *obj, QEvent *event)
 
              if(mouseEvent->button() == Qt::LeftButton)
              {
-                SkillSelect = 3;
-                use_skill();
+                 if(ObjectSelect == 0)
+                 {
+                     show_summon();
+                 }
+                 SkillSelect = 3;
+                //use_skill();
                 return true;
              }
              else
@@ -469,7 +491,7 @@ bool FightUI::eventFilter(QObject *obj, QEvent *event)
              if(mouseEvent->button() == Qt::LeftButton)
              {
                 SkillSelect = 2;
-                use_skill();
+                //use_skill();
                 return true;
              }
              else
@@ -491,7 +513,7 @@ bool FightUI::eventFilter(QObject *obj, QEvent *event)
              if(mouseEvent->button() == Qt::LeftButton)
              {
                 SkillSelect = 1;
-                use_skill();
+                //use_skill();
                 return true;
              }
              else
@@ -513,7 +535,7 @@ bool FightUI::eventFilter(QObject *obj, QEvent *event)
              if(mouseEvent->button() == Qt::LeftButton)
              {
                 SkillSelect = 0;
-                use_skill();
+                //use_skill();
                 return true;
              }
              else
@@ -534,9 +556,18 @@ bool FightUI::eventFilter(QObject *obj, QEvent *event)
 
              if(mouseEvent->button() == Qt::LeftButton)
              {
-                MySummonSeq[monsterNum] = 0;
-                hide_summon();
-                summon_monster(0);
+
+                if(costmonster > 0)
+                {
+                    costmonster--;
+                    monsterselect = 0;
+                }
+                else {
+                    qDebug() << "无法召唤更多此怪物" << endl;
+                }
+                //MySummonSeq[monsterNum] = 1;
+                //hide_summon();
+                //summon_monster(0);
                 return true;
              }
              else
@@ -557,9 +588,17 @@ bool FightUI::eventFilter(QObject *obj, QEvent *event)
 
              if(mouseEvent->button() == Qt::LeftButton)
              {
-                MySummonSeq[monsterNum] = 1;
-                hide_summon();
-                summon_monster(1);
+                 if(costmonster > 0)
+                 {
+                     costmonster--;
+                     monsterselect = 1;
+                 }
+                 else {
+                     qDebug() << "无法召唤更多此怪物" << endl;
+                 }
+//                MySummonSeq[monsterNum] = 1;
+//                hide_summon();
+//                summon_monster(1);
                 return true;
              }
              else
@@ -580,9 +619,17 @@ bool FightUI::eventFilter(QObject *obj, QEvent *event)
 
              if(mouseEvent->button() == Qt::LeftButton)
              {
-                 MySummonSeq[monsterNum] = 2;
-                 hide_summon();
-                 summon_monster(2);
+                 if(costmonster > 0)
+                 {
+                     costmonster--;
+                     monsterselect = 2;
+                 }
+                 else {
+                     qDebug() << "无法召唤更多此怪物" << endl;
+                 }
+//                 MySummonSeq[monsterNum] = 2;
+//                 hide_summon();
+//                 summon_monster(2);
                 return true;
              }
              else
@@ -603,9 +650,17 @@ bool FightUI::eventFilter(QObject *obj, QEvent *event)
 
              if(mouseEvent->button() == Qt::LeftButton)
              {
-                MySummonSeq[monsterNum] = 3;
-                hide_summon();
-                summon_monster(3);
+                 if(costmonster > 0)
+                 {
+                     costmonster--;
+                     monsterselect = 3;
+                 }
+                 else {
+                     qDebug() << "无法召唤更多此怪物" << endl;
+                 }
+//                MySummonSeq[monsterNum] = 3;
+//                hide_summon();
+//                summon_monster(3);
                 return true;
              }
              else
@@ -707,4 +762,55 @@ FightUI::~FightUI()
 {
     delete ui;
 }
+int FightUI::have_object()
+{
+    if(ObjectSelect == 0)
+    {
+        if(SkillSelect == 0 || SkillSelect == 3)
+            return 1;
+        else {
+            return 0;
+        }
+    }
+    else if(ObjectSelect > 0 && ObjectSelect <= 3){
+        return fightEnv->has_obj(ObjectSelect, SkillSelect);
+    }
+}
 
+
+void FightUI::on_pushButton_clicked()
+{
+    if(ObjectSelect == -1)
+    {
+        //提示选择obj
+    }
+    else{
+        if(SkillSelect == -1)
+        {
+            //提示选择skill
+        }
+        else{
+            if(have_object() == 1)
+            {
+                if(eneMonSelect == -1)
+                {
+                    //提示选择enemonster
+                    //当skill为召唤时，enemonster为monster的编号
+                }
+                else {
+                    //检测通过，发送
+                    fightEnv->dispatch(ObjectSelect, SkillSelect, eneMonSelect);
+                }
+            }
+            else if(have_object() == ATTACK_A){
+                //无需选择obj，发送
+                fightEnv->dispatch(ObjectSelect, SkillSelect, ATTACK_A);
+            }
+            else{
+                fightEnv->dispatch(ObjectSelect, SkillSelect, ATTACK_N);
+            }
+        }
+    }
+
+
+}

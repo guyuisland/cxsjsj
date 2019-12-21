@@ -10,6 +10,8 @@
 #include "gamelobby.h"
 #include "fightui.h"
 #include "rankingroom.h"
+#include "waitingroom.h"
+#include "json.hpp"
 
 namespace Ui {
 class StackWidget;
@@ -21,7 +23,7 @@ class StackWidget : public QWidget
     Q_OBJECT
 
 public:
-    explicit StackWidget(ClientSocket *client, QWidget *parent = 0);
+    explicit StackWidget(ClientSocket *client, json&, QWidget *parent = 0);
     ~StackWidget();
 
 signals:
@@ -60,7 +62,7 @@ private:
     GameLobby *_gameLobby;
     FightUI *_fightRoom;
     RankingRoom * _rankingRoom;
-
+    WaitingRoom *_waitingRoom;
 
 };
 

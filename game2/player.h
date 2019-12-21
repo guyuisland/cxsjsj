@@ -1,4 +1,4 @@
-#ifndef PLAYER_H
+﻿#ifndef PLAYER_H
 #define PLAYER_H
 
 #include<vector>
@@ -56,6 +56,8 @@ public:
     void dec_round();
     //删除死亡的怪兽
     void delete_dead_monster();
+    //i位置的怪兽的j号技能是否需要选择目标对象
+    int has_obj(int , int);
 private:
     std::vector<Monster*> monster;
     int empty_slot = 3;

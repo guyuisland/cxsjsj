@@ -1,7 +1,6 @@
 ﻿#include "gamelobby.h"
 #include "ui_gamelobby.h"
 #include <QLabel>
-
 #include <QMovie>
 #include <QPropertyAnimation>
 #include <QMouseEvent>
@@ -12,8 +11,10 @@
 #include<QMouseEvent>
 #include <QDebug>
 
-GameLobby::GameLobby(ClientSocket *client, QWidget *parent) :
+
+GameLobby::GameLobby(ClientSocket *client,  json & recvInfo, QWidget *parent) :
     QDialog(parent),
+    _client(client),
     ui(new Ui::GameLobby)
 {
     ui->setupUi(this);
@@ -23,6 +24,36 @@ GameLobby::GameLobby(ClientSocket *client, QWidget *parent) :
     setWindowTitle("游戏大厅");
     SetUserList();
     InitUi();
+    QFont ft("Microsoft YaHei", 10);
+    //ft.setPointSize(11);
+    ui->name->setFont(ft);
+    QPalette pa;
+    pa.setColor(QPalette::WindowText,QColor("#ff4757"));
+    ui->name->setPalette(pa);
+
+    //刷新用户名、waiting列表
+    myName = QString::fromStdString(recvInfo["myName"].get<string>());
+    QString str = "Username: " + myName;
+    ui->level->setText("Lv:" + QString(recvInfo["myLv"].get<int>()));
+
+    wList = recvInfo["wList"].get<std::vector<std::string>>();
+    int size = wList.size(), i = 0;
+    if(i < size)
+    {ui->User1->setText(QString::fromStdString(wList[i++])); userExist[0] = 1;}
+    else
+        ui->User1->clear();
+    if(i < size)
+    {ui->User2->setText(QString::fromStdString(wList[i++])); userExist[1] = 1;}
+    else
+        ui->User2->clear();
+    if(i < size)
+    {ui->User3->setText(QString::fromStdString(wList[i++])); userExist[2] = 1;}
+    else
+        ui->User3->clear();
+    if(i < size)
+    {ui->User4->setText(QString::fromStdString(wList[i++])); userExist[3] = 1;}
+    else
+        ui->User4->clear();
 
 }
 void GameLobby::InitUi()
@@ -101,21 +132,32 @@ void GameLobby::mousePressEvent(QMouseEvent *event)
     // 判断鼠标所在区域，产生响应信号
     if (isPointInPolygon(User1, std::move(QPointF(x, y))))
     {
-        if(1)//对方接受你的请求,连接到同一个房间
+        if(userExist[0] == 1)
         {
-            //OpenFightWin();
-            emit clicked(1);
-        }
-        else {//弹窗提示拒接
-
+            send_invitation(0);
         }
     }
     else if (isPointInPolygon(User2, std::move(QPointF(x, y))))
-        qDebug() << "222";
+    {
+        if(userExist[1] == 1)
+        {
+            send_invitation(1);
+        }
+    }
     else if (isPointInPolygon(User3, std::move(QPointF(x, y))))
-        qDebug() << "3";
+    {
+        if(userExist[2] == 1)
+        {
+            send_invitation(2);
+        }
+    }
     else if (isPointInPolygon(User4, std::move(QPointF(x, y))))
-        qDebug() << "4";
+    {
+        if(userExist[3] == 1)
+        {
+            send_invitation(3);
+        }
+    }
 }
 void GameLobby::reshow(){
     qDebug() << "reshow";
@@ -129,4 +171,146 @@ GameLobby::~GameLobby()
 void GameLobby::on_rankButton_clicked()
 {
     emit clicked(2);
+}
+
+void GameLobby::on_waitButton_clicked()
+{
+    json sendInfo;
+    sendInfo["define"] = READY;
+    sendInfo["myName"] = myName.toStdString();
+    emit clicked(3);
+
+    std::string (ClientSocket::*p)(std::string) = &ClientSocket::Send_Recv;
+    strWatcherPtr = new QFutureWatcher<std::string>;
+    QFuture<std::string> ret = QtConcurrent::run(_client, p, sendInfo.dump());
+    connect(strWatcherPtr, SIGNAL(finished()), this, SLOT(invite_handle()));
+    strWatcherPtr->setFuture(ret);
+
+}
+
+void GameLobby::invite_handle()
+{
+    json recvInfo = json::parse(strWatcherPtr->result());
+    disconnect(strWatcherPtr, SIGNAL(finished()), this, SLOT(invite_handle()));
+    delete strWatcherPtr;
+    if(recvInfo["define"].get<int>() == INVITE)
+    {
+        //qDebug() <<"here3";
+        QString oppName = QString::fromStdString(recvInfo["myName"].get<std::string>());
+        QMessageBox msg(this);
+        msg.setWindowTitle("Invitation");
+        msg.setText("Player " + oppName + " is inviting you to play!");
+        msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        json sendInfo;
+        sendInfo["define"] = REPLY;
+        sendInfo["myName"] = myName.toStdString();
+        sendInfo["opponent"] = recvInfo["myName"];
+        if(msg.exec() == QMessageBox::Yes)
+        {
+            emit clicked(1);
+            sendInfo["option"] = ACCEPT;
+
+        }
+        else if(msg.exec() == QMessageBox::No){
+            emit clicked(0);
+            sendInfo["option"] = REFUSE;
+        }
+        std::string (ClientSocket::*p)(std::string) = &ClientSocket::Send_Recv;
+        strWatcherPtr = new QFutureWatcher<std::string>;
+        QFuture<std::string> ret = QtConcurrent::run(_client, p, sendInfo.dump());
+        connect(strWatcherPtr, SIGNAL(finished()), this, SLOT(send_handle()));
+        strWatcherPtr->setFuture(ret);
+    }
+
+}
+
+void GameLobby::send_handle()
+{
+    disconnect(strWatcherPtr, SIGNAL(finished()), this, SLOT(send_handle()));
+    delete strWatcherPtr;
+}
+
+
+void GameLobby::on_updateButton_clicked()
+{
+    json sendInfo;
+    sendInfo["define"] = GET_WAITING_LIST;
+
+    std::string (ClientSocket::*p)(std::string) = &ClientSocket::Send_Recv;
+    strWatcherPtr = new QFutureWatcher<std::string>;
+    QFuture<std::string> ret = QtConcurrent::run(_client, p, sendInfo.dump());
+    connect(strWatcherPtr, SIGNAL(finished()), this, SLOT(update_handle()));
+    strWatcherPtr->setFuture(ret);
+
+
+}
+
+void GameLobby::update_handle()
+{
+    json recvInfo = json::parse(strWatcherPtr->result());
+    disconnect(strWatcherPtr, SIGNAL(finished()), this, SLOT(update_handle()));
+    delete strWatcherPtr;
+    wList = recvInfo["w_list"].get<std::vector<std::string>>();
+    int size = wList.size(), i = 0;
+    if(i < size)
+    {ui->User1->setText(QString::fromStdString(wList[i++])); userExist[0] = 1;}
+    else
+    {ui->User1->clear(); userExist[0] = 0;}
+    if(i < size)
+    {ui->User2->setText(QString::fromStdString(wList[i++])); userExist[1] = 1;}
+    else
+    {ui->User2->clear(); userExist[1] = 0;}
+    if(i < size)
+    {ui->User3->setText(QString::fromStdString(wList[i++])); userExist[2] = 1;}
+    else
+    {ui->User3->clear(); userExist[2] = 0;}
+    if(i < size)
+    {ui->User4->setText(QString::fromStdString(wList[i++])); userExist[3] = 1;}
+    else
+    {ui->User4->clear(); userExist[3] = 0;}
+}
+
+void GameLobby::send_invitation(int index)
+{
+    json sendInfo;
+    sendInfo["define"] = INVITE;
+    sendInfo["myName"] = myName.toStdString();
+    sendInfo["opponent"] = wList[index];
+    this->invitedName = QString::fromStdString(wList[index]);
+    std::string (ClientSocket::*p)(std::string) = &ClientSocket::Send_Recv;
+    strWatcherPtr = new QFutureWatcher<std::string>;
+    QFuture<std::string> ret = QtConcurrent::run(_client, p, sendInfo.dump());
+    connect(strWatcherPtr, SIGNAL(finished()), this, SLOT(reply_handle()));
+    strWatcherPtr->setFuture(ret);
+
+}
+
+
+void GameLobby::reply_handle()
+{
+    json recvInfo = json::parse(strWatcherPtr->result());
+    disconnect(strWatcherPtr, SIGNAL(finished()), this, SLOT(reply_handle()));
+    delete strWatcherPtr;
+    if(recvInfo["define"] == REPLY)
+    {
+        if(recvInfo["option"] == ACCEPT)
+        {
+            QMessageBox msg(this);
+            msg.setWindowTitle("Reply");
+            msg.setText("Player " + invitedName + " accepted your invitation!");
+            msg.setStandardButtons(QMessageBox::Ok);
+            if(msg.exec() == QMessageBox::Ok)
+            {
+                emit clicked(1);
+            }
+        }
+        else if(recvInfo["option"] == REFUSE)
+        {
+            QMessageBox msg(this);
+            msg.setWindowTitle("Reply");
+            msg.setText("Player " + invitedName + " refused your invitation!");
+            msg.setStandardButtons(QMessageBox::Ok);
+            msg.exec();
+        }
+    }
 }

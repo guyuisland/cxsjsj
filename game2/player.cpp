@@ -1,4 +1,4 @@
-#include "player.h"
+﻿#include "player.h"
 
 Player::Player(std::string myName,int lv)
 {
@@ -241,4 +241,9 @@ void Player::delete_dead_monster(){
             delete monster[i];
         }
     }
+}
+
+int Player::has_obj(int monsterPos, int skiPos)
+{
+    return monster[monsterPos]->has_obj(skiPos);
 }

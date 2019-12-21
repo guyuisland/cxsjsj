@@ -29,6 +29,19 @@ int Monster::get_cost(){
 int Monster::get_HP(){
     return cur_HP;
 }
+int Monster::has_obj(int skiPos){
+    if(skills[skiPos].get_damage() > 0)
+    {
+        if(skills[skiPos].get_group())
+            return ATTACK_A;
+        else {
+            return 1;
+        }
+    }
+    return ATTACK_N;
+}
+
+
 Mage::Mage()
 {
     max_HP = 6;

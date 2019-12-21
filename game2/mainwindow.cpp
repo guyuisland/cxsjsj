@@ -7,12 +7,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     //this->setFixedSize( 540,360);
     ui->setupUi(this);
-//    setTabOrder(ui->Username_Input,ui->Password_Input);
-    //setStyleSheet ("background: #ffffff;color: #000000;");
-    /*QPalette pal = this->palette();
-    pal.setBrush(QPalette::Background,QBrush(QPixmap(":/Image/login.jpg")));
-    setPalette(pal);*/
 
+    QPalette pal = this->palette();
+    pal.setBrush(QPalette::Background,QBrush(QPixmap(":/Image/start.jpg")));
+    setPalette(pal);
 
     QPainter paint(this);
     paint.setPen(QPen(Qt::green,4,Qt::SolidLine));
@@ -23,11 +21,12 @@ MainWindow::MainWindow(QWidget *parent) :
 //    std::thread t(clientSocket->Connect());
 //    t.detach();
     int (ClientSocket::*p)() = &ClientSocket::Connect;
-    QFutureWatcher<int> watcher;
-    connect(&watcher, SIGNAL(finished()), this, SLOT(get_conn_ret()));
+    wp = new QFutureWatcher<int>;
 
     QFuture<int> ret = QtConcurrent::run(clientSocket, p);
-    watcher.setFuture(ret);
+    connect(wp, SIGNAL(finished()), this, SLOT(get_conn_ret()));
+    wp->setFuture(ret);
+
     //emit finished(watcher.future());
     //conn_code = ret.result();
 
@@ -54,13 +53,15 @@ void MainWindow::on_signupButtion_clicked()
     sendinfo["password"]= Login_pw.toStdString();
 
     //如果注册成功
-    json recvinfo = json::parse(clientSocket->Send(sendinfo.dump()));
+    json recvinfo = json::parse(clientSocket->Send_Recv(sendinfo.dump()));
     if(recvinfo["define"].get<int>() == SIGN_UP_SUCCESS)
     {
-        QMessageBox::information(NULL, "", "注册成功",QMessageBox::Yes|QMessageBox::No);
+        //QMessageBox::information(NULL, "", "注册成功",QMessageBox::Yes|QMessageBox::No);
         this->close();
-        GameLobbyWin = new GameLobby(clientSocket);
-        GameLobbyWin->show();
+        _stackWidget = new StackWidget(clientSocket, recvinfo);
+        _stackWidget->show();
+//        GameLobbyWin = new GameLobby(clientSocket);
+//        GameLobbyWin->show();
     }
     else{//用户名已存在
         QMessageBox::information(NULL, "", "用户名已存在",QMessageBox::Yes|QMessageBox::No);
@@ -73,22 +74,22 @@ void MainWindow::on_loginButton_clicked()
     QString Login_un = ui->usernameEdit->text();
     QString Login_pw = ui->passwordEdit->text();
     qDebug() << Login_un << Login_pw;
-    Login_un = "hi";
-    Login_pw = "123";
+    //Login_un = "hi";
+    //Login_pw = "123";
     json sendinfo;
     sendinfo["define"] = LOG_IN;
     sendinfo["username"]= Login_un.toStdString();
     sendinfo["password"]= Login_pw.toStdString();
 
     //如果登录成功
-    json recvinfo = json::parse(clientSocket->Send(sendinfo.dump()));
+    json recvinfo = json::parse(clientSocket->Send_Recv(sendinfo.dump()));
     int ret = recvinfo["define"].get<int>();
     if(ret == LOG_IN_SUCCESS)
     {
         this->close();
         //GameLobbyWin = new GameLobby(clientSocket);
         //GameLobbyWin->show();
-        _stackWidget = new StackWidget(clientSocket);
+        _stackWidget = new StackWidget(clientSocket, recvinfo);
         _stackWidget->show();
     }
     else if(ret == LOG_IN_FAIL_AO)//用户已在线
@@ -105,7 +106,7 @@ void MainWindow::on_loginButton_clicked()
 
 void MainWindow::get_conn_ret()
 {
-    qDebug() << "here\n";
+//    qDebug() << wp->result();
 //    if(conn_code)
 //    {
 //        qDebug() << "Connect success.\n";
@@ -113,4 +114,5 @@ void MainWindow::get_conn_ret()
 //    else {
 //        qDebug() << "Connect failed.\n";
 //    }
+    delete wp;
 }

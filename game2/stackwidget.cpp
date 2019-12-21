@@ -2,16 +2,18 @@
 #include "ui_stackwidget.h"
 #include <QGraphicsDropShadowEffect>
 
-StackWidget::StackWidget(ClientSocket *client, QWidget *parent) :
+StackWidget::StackWidget(ClientSocket *client, json& recvInfo, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::StackWidget),
     _client(client),
-    _gameLobby(new GameLobby(client)),
+    _gameLobby(new GameLobby(client, recvInfo)),
     _fightRoom(new FightUI(client)),
-    _rankingRoom(new RankingRoom(client))
+    _rankingRoom(new RankingRoom(client)),
+    _waitingRoom(new WaitingRoom(client))
 {
     ui->setupUi(this);
     InitUi();
+
     InitConnect();
 }
 
@@ -26,7 +28,7 @@ void StackWidget::InitUi()
     _stackLayout->addWidget(_gameLobby);
     _stackLayout->addWidget(_fightRoom);
     _stackLayout->addWidget(_rankingRoom);
-
+    _stackLayout->addWidget(_waitingRoom);
 //    _stackLayout->addWidget(_userListWidget);
 //    _stackLayout->addWidget(_scratchWidget);
 //    _stackLayout->addWidget(_bagWidget);
@@ -38,6 +40,7 @@ void StackWidget::InitConnect()
 {
     // 连接各个分视图的信号
     connect(_gameLobby, SIGNAL(clicked(int)), this, SLOT(SetCurrentIndex(int)));
+
     connect(_fightRoom, SIGNAL(clicked(int)), this, SLOT(SetCurrentIndex(int)));
     //connect(_rankingRoom, SIGNAL(clicked(int)), this, SLOT(SetCurrentIndex(int)));
     connect(_rankingRoom, SIGNAL(back()), this, SLOT(backToLobby()));
@@ -60,8 +63,8 @@ StackWidget::~StackWidget()
     delete ui;
     delete _gameLobby;
     delete _fightRoom;
-//    delete _userListWidget;
-//    delete _bagWidget;
+    delete _waitingRoom;
+    delete _rankingRoom;
 //    delete _fightWidget;
 //    delete _scratchWidget;
     delete _client;
@@ -76,6 +79,10 @@ void StackWidget::SetCurrentIndex(int index)
 //        emit refreshBag();
 //    else if (index == 4)
 //        emit refreshFight();
+    if(index == 0)
+        _gameLobby->on_updateButton_clicked();
+    if(index == 2)
+        _rankingRoom->on_update_ranking();
     _stackLayout->setCurrentIndex(index);
 
 }

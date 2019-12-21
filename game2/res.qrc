@@ -17,5 +17,8 @@
         <file>Image/talonflame.gif</file>
         <file>Image/fightroom.png</file>
         <file>Image/Fire_left.png</file>
+        <file>Image/start.jpg</file>
+        <file>Image/rankroom.jpg</file>
+        <file>Image/back.png</file>
     </qresource>
 </RCC>
