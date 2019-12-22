@@ -47,6 +47,31 @@ public:
     //根据UI获得选择转到相应处理逻辑
     void dispatch(int , int , int );
 
+signals:
+    //动画槽函数
+    void on_my_attack(int );
+    void on_my_defend();
+    void on_my_acc();//我方蓄气
+    void on_my_summon(int );//我方召唤
+    void on_my_monster_dead(int );
+    void on_my_skill(int , int);
+    void on_my_surrender();
+    void on_my_win();
+    void on_my_lose();
+    void on_update_my_HP(int , int, int);
+    void on_update_my_MP(int);
+
+    void on_opp_attack(int );
+    void on_opp_defend();
+    void on_opp_acc();//对方蓄气
+    void on_opp_summon(int );//对方召唤
+    void on_opp_monster_dead(int );
+    void on_opp_skill(int , int);
+    void on_opp_surrender();
+    void on_update_opp_HP(int , int, int);
+    void on_update_opp_MP(int);
+
+    void on_serv_timeout();//服务器超时
 
 private slots:
     void round_handle();
@@ -91,6 +116,8 @@ private:
     ClientSocket *_client;
     QFutureWatcher<std::string> *strWatcherPtr;
     json jsBuf;
+    QWidget *_parent;
+
 };
 
 #endif // FIGHTENV_H

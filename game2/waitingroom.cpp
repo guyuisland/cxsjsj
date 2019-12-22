@@ -7,11 +7,36 @@ WaitingRoom::WaitingRoom(ClientSocket *client, QWidget *parent) :
     _client(client)
 {
     ui->setupUi(this);
-    setFixedSize(1280, 720);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    QMediaPlayer* player = new QMediaPlayer;
+    QVideoWidget* videoWidget = new QVideoWidget;
+    QMediaPlaylist* playlist=new QMediaPlaylist;
+
+    videoWidget->setAspectRatioMode(Qt::IgnoreAspectRatio);
+    videoWidget->setFullScreen(true);
+
+    layout->addWidget(videoWidget);
+    ui->widget->setLayout(layout);
+
+    playlist->clear();
+    playlist->addMedia(QUrl::fromLocalFile("H:\\Users\\Myth\\source\\repos\\cxsjsj\\game2\\adv.avi"));
+    playlist->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
+    player->setPlaylist(playlist);
+
+
+    player->setVideoOutput(videoWidget);
+    player->setPlaylist(playlist);
+
+    ui->widget->showFullScreen();
+    player->play();
+
 }
 
 WaitingRoom::~WaitingRoom()
 {
+    player->stop();
     delete ui;
 }
 

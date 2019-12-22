@@ -17,12 +17,26 @@ FightUI::FightUI(ClientSocket *client, QWidget *parent) :
     ui->setupUi(this);
     InitUi();
     timer = new QTimer;
+    timer2 = new QTimer;
     connect(timer, SIGNAL(timeout()), this, SLOT(hide_ski_anm()));
+    connect(timer2, SIGNAL(timeout()), this, SLOT(hide_ski_anm()));
     fightEnv = new Fightenv(_client);
-
+    rebound_ski();
     renew_enemy_monster();
 }
-
+void FightUI::rebound_ski()
+{
+    rebound = new QLabel;
+    rebound->setGeometry(rect().x()+745, rect().y()+375,
+                                    100, 50);
+    rebound->setParent(this);
+    QMovie *movie = new QMovie(":/Image/rebound.gif");
+    rebound->setMovie(movie);
+    //设置图片的大小
+    movie->setScaledSize(QSize(250,250));
+    movie->start();
+    timer2->start(2000);
+}
 void FightUI::init_player(QString &myName, QString &oppName, int myLv, int oppLv)
 {
     fightEnv->set_players(Player(myName.toStdString(), myLv), Player(oppName.toStdString(), oppLv));
@@ -812,5 +826,100 @@ void FightUI::on_pushButton_clicked()
         }
     }
 
+
+}
+
+
+//动画槽函数
+void FightUI::my_attack(int pos)//攻击了对面pos位置
+{
+
+}
+void FightUI::my_defend()
+{
+
+}
+void FightUI::my_acc()//我方蓄气
+{
+
+}
+void FightUI::my_summon(int monsterNO)//怪兽编号为monsterNO
+{
+
+}
+void FightUI::my_monster_dead(int pos)//pos位置上怪兽死亡
+{
+
+}
+void FightUI::my_skill(int pos, int skiNo)//pos位置上的skiNo号技能
+{
+
+}
+void FightUI::my_surrender()
+{
+
+}
+void FightUI::my_win()
+{
+
+}
+
+void FightUI::my_lose()
+{
+
+}
+void FightUI::update_my_HP(int mode, int pos, int value)//mode为1是+，0是-，pos为位置，value为变化的数值
+{
+
+}
+void FightUI::update_my_MP(int value)//value为变化的数值
+{
+
+}
+
+void FightUI::opp_attack(int pos)//攻击了对面pos位置
+{
+
+}
+
+void FightUI::opp_defend()
+{
+
+}
+
+void FightUI::opp_acc()
+{
+
+}
+void FightUI::opp_summon(int monsterNO)//怪兽编号为monsterNO
+{
+
+}
+
+void FightUI::opp_monster_dead(int pos)//pos位置上怪兽死亡
+{
+
+}
+
+void FightUI::opp_skill(int pos, int skiNo)//pos位置上的skiNo号技能
+{
+
+}
+
+void FightUI::opp_surrender()
+{
+
+}
+void FightUI::update_opp_HP(int mode, int pos, int value)//mode为1是+，0是-，pos为位置，value为变化的数值
+{
+
+}
+void FightUI::update_opp_MP(int value)//value为变化的数值
+{
+
+}
+
+void FightUI::serv_timeout()//服务器超时
+{
 
 }

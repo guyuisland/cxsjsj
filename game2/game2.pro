@@ -7,6 +7,9 @@
 QT       += core gui
 QT += concurrent
 QT += network
+QT += multimedia
+QT += multimediawidgets
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 LIBS += -lpthread libwsock32 libws2_32
 TARGET = game2

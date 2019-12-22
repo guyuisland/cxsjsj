@@ -30,9 +30,38 @@ signals:
     void sendsignal();
     void clicked(int );
 
+public slots:
+    //动画槽函数
+    void my_attack(int );
+    void my_defend();
+    void my_acc();//我方蓄气
+    void my_summon(int );//我方召唤
+    void my_monster_dead(int );
+    void my_skill(int , int);
+    void my_surrender();
+    void my_win();
+    void my_lose();
+    void update_my_HP(int , int, int);
+    void update_my_MP(int);
+
+    void opp_attack(int );
+    void opp_defend();
+    void opp_acc();//对方蓄气
+    void opp_summon(int );//对方召唤
+    void opp_monster_dead(int );
+    void opp_skill(int , int);
+    void opp_surrender();
+    void update_opp_HP(int , int, int);
+    void update_opp_MP(int);
+
+
+    void serv_timeout();//服务器超时
+
 private slots:
     void hide_ski_anm();
     void on_pushButton_clicked();
+
+
 
 private:
     Ui::FightUI *ui;
@@ -69,6 +98,7 @@ private:
     int eneMonSelect = -1;
     //void enterEvent(QEvent *event);
     QTimer *timer;
+    QTimer *timer2;
     Fightenv *fightEnv;//记录战斗场面信息
     void submit();
 
@@ -76,6 +106,8 @@ private:
     int costmonster = 2;
     int num = 2;
     int monsterselect = 0;
+    QLabel *rebound;
+    void rebound_ski();//
 };
 
 #endif // FIGHTUI_H

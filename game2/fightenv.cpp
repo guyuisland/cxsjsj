@@ -4,6 +4,7 @@
 
 Fightenv::Fightenv(ClientSocket *client, QWidget *parent):
     _client(client),
+    _parent(parent),
     ui(new Ui::Fightenv)
 {
     monsterFactory = new MonsterFactory;

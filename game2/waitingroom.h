@@ -3,6 +3,12 @@
 
 #include <QWidget>
 #include "clientsocket.h"
+#include <QMainWindow>
+#include <QVideoWidget>
+#include <QMediaPlayer>
+#include <QFileDialog>
+#include <QMediaPlaylist>
+#include<QBoxLayout>
 
 namespace Ui {
 class WaitingRoom;
@@ -16,10 +22,17 @@ public:
     explicit WaitingRoom(ClientSocket *, QWidget *parent = nullptr);
     ~WaitingRoom();
 
+    void addToPlaylist(const QStringList& fileNames);
 private:
-
+    ClientSocket *_client;
     Ui::WaitingRoom *ui;
-    ClientSocket *_client;//与服务器连接的socket
+    QMediaPlayer *player;
+    QVideoWidget *videoWidget;
+    QMediaPlaylist *Playlist;
+    QString m_fileName;
+    QMediaPlayer::State  m_playerState;
+
+
 };
 
 #endif // WAITINGROOM_H

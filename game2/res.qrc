@@ -20,5 +20,6 @@
         <file>Image/start.jpg</file>
         <file>Image/rankroom.jpg</file>
         <file>Image/back.png</file>
+        <file>Image/rebound.gif</file>
     </qresource>
 </RCC>
