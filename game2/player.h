@@ -6,6 +6,7 @@
 #include"json.hpp"
 #include"protocol.h"
 #include"monster.h"
+#include<vector>
 
 using json=nlohmann::json;
 
@@ -24,6 +25,7 @@ public:
     void lose(json&);
 
     int get_HP();
+    void get_HP_vec(std::vector<int>& );
     int get_MP();
     std::string get_name();
     int get_lv();
@@ -38,6 +40,7 @@ public:
     int monster_num();
     void dec_monster_HP(int );
     void ski_attack_monster_HP(Skill s, int pos, bool revive);
+    void get_dead_monster(std::vector<int>&);
     //反弹攻击目标
     int rebound_aim();
     //怪兽空位数
@@ -58,11 +61,14 @@ public:
     void delete_dead_monster();
     //i位置的怪兽的j号技能是否需要选择目标对象
     int has_obj(int , int);
+    //返回所有怪物的编号
+    void get_mon_No(std::vector<int>&);
 private:
     std::vector<Monster*> monster;
     int empty_slot = 3;
     int HP = 1;
     int MP = 1;
+    bool crazy;
     std::unordered_map<int,int> buff;//玩家状态(状态：持续回合数)
     std::string name;
     int level;

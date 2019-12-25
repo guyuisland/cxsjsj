@@ -22,6 +22,11 @@ std::string Monster::get_name(){
     return name;
 }
 
+int Monster::get_No()
+{
+    return No;
+}
+
 int Monster::get_cost(){
     return energyCost;
 }
@@ -50,9 +55,9 @@ Mage::Mage()
     callTimes = 2;
     name = "Mage";
 
-    skills.emplace_back(Skill(2,std::make_pair(false,0),std::make_pair(false,0),false,false,false,false,false,false,100,0));
-    skills.emplace_back(Skill(6,std::make_pair(false,0),std::make_pair(false,0),true,false,true,false,false,false,2,0));
-    skills.emplace_back(Skill(4,std::make_pair(false,0),std::make_pair(false,0),false,false,false,false,false,false,0,3));
+    skills.emplace_back(Skill(2,std::make_pair(false,0),std::make_pair(false,0),"thunder","kill a monster of opponent",false,false,false,false,false,false,100,0));
+    skills.emplace_back(Skill(6,std::make_pair(false,0),std::make_pair(false,0),"fire","penetrate dec two damage for every monster",true,false,true,false,false,false,2,0));
+    skills.emplace_back(Skill(4,std::make_pair(false,0),std::make_pair(false,0),"heal","治疗自己4点血",false,false,false,false,false,false,0,3));
 }
 Mage::~Mage()
 {
@@ -70,7 +75,7 @@ Skill Mage::skill3()
     return skills[2];
 }
 
-Sprite::Sprite()
+/*Sprite::Sprite()
 {
     max_HP = 5;
     cur_HP=max_HP;
@@ -96,7 +101,7 @@ Skill Sprite::skill2()
 Skill Sprite::skill3()
 {
     return skills[2];
-}
+}*/
 
 Pegasus::Pegasus()
 {
@@ -106,9 +111,9 @@ Pegasus::Pegasus()
     callTimes = 2;
     name = "Pegasus";
 
-    skills.emplace_back(Skill(2,std::make_pair(true,1),std::make_pair(false,0),false,false,false,true,false,false,0,0));
-    skills.emplace_back(Skill(1,std::make_pair(false,0),std::make_pair(false,0),false,true,false,false,false,false,2,0));
-    skills.emplace_back(Skill(4,std::make_pair(false,0),std::make_pair(false,0),true,false,false,false,false,false,3,0));
+    skills.emplace_back(Skill(2,std::make_pair(true,1),std::make_pair(false,0),"疾风步","躲避当前攻击，并且下次攻击翻倍",false,false,false,true,false,false,0,0));
+    skills.emplace_back(Skill(1,std::make_pair(false,0),std::make_pair(false,0),"钢闪刃","造成2点伤害",false,true,false,false,false,false,2,0));
+    skills.emplace_back(Skill(4,std::make_pair(false,0),std::make_pair(false,0),"剑刃风暴","对所有怪兽造成3点伤害",true,false,false,false,false,false,3,0));
 }
 Pegasus::~Pegasus()
 {
@@ -134,9 +139,9 @@ Scorpicore::Scorpicore()
     callTimes = 3;
     name = "Scorpicore";
 
-    skills.emplace_back(Skill(3,std::make_pair(false,0),std::make_pair(true,2),false,false,false,false,false,false,0,0));
-    skills.emplace_back(Skill(2,std::make_pair(false,0),std::make_pair(false,0),false,false,false,false,false,false,3,1));
-    skills.emplace_back(Skill(3,std::make_pair(false,0),std::make_pair(false,0),true,false,false,false,false,false,1,0));
+    skills.emplace_back(Skill(3,std::make_pair(false,0),std::make_pair(true,2),"反弹","可在接下来两回合内反弹对手的攻击",false,false,false,false,false,false,0,0));
+    skills.emplace_back(Skill(2,std::make_pair(false,0),std::make_pair(false,0),"撕咬","造成3点伤害，恢复自身1点血量",false,false,false,false,false,false,3,1));
+    skills.emplace_back(Skill(3,std::make_pair(false,0),std::make_pair(false,0),"淬毒","对敌人所有怪物造成1点伤害",true,false,false,false,false,false,1,0));
 }
 Scorpicore::~Scorpicore()
 {
@@ -154,7 +159,7 @@ Skill Scorpicore::skill3()
     return skills[2];
 }
 
-Phoenix::Phoenix()
+/*Phoenix::Phoenix()
 {
     max_HP = 12;
     cur_HP=max_HP;
@@ -180,7 +185,7 @@ Skill Phoenix::skill2()
 Skill Phoenix::skill3()
 {
     return skills[2];
-}
+}*/
 
 Knight::Knight()
 {
@@ -190,9 +195,9 @@ Knight::Knight()
     callTimes = 3;
     name = "Knight";
 
-    skills.emplace_back(Skill(7,std::make_pair(false,0),std::make_pair(false,0),true,false,false,false,false,false,100,0));
-    skills.emplace_back(Skill(2,std::make_pair(false,0),std::make_pair(false,0),false,false,false,false,true,false,1,0));//加能量
-    skills.emplace_back(Skill(8,std::make_pair(false,0),std::make_pair(false,0),false,true,true,false,false,false,3,0));
+    skills.emplace_back(Skill(7,std::make_pair(false,0),std::make_pair(false,0),"血暮","击杀对手所有怪兽",true,false,false,false,false,false,100,0));
+    skills.emplace_back(Skill(2,std::make_pair(false,0),std::make_pair(false,0),"怖刃","造成1点伤害，加一点能量",false,false,false,false,true,false,1,0));//加能量
+    skills.emplace_back(Skill(8,std::make_pair(false,0),std::make_pair(false,0),"暗瞳","穿透伤害",false,true,true,false,false,false,3,0));
 }
 Knight::~Knight()
 {

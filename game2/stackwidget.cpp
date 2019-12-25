@@ -6,12 +6,13 @@ StackWidget::StackWidget(ClientSocket *client, json& recvInfo, QWidget *parent) 
     QWidget(parent),
     ui(new Ui::StackWidget),
     _client(client),
-    _gameLobby(new GameLobby(client, recvInfo)),
     _fightRoom(new FightUI(client)),
+
     _rankingRoom(new RankingRoom(client)),
     _waitingRoom(new WaitingRoom(client))
 {
     ui->setupUi(this);
+    _gameLobby = new GameLobby(_client, recvInfo, _fightRoom);
     InitUi();
 
     InitConnect();

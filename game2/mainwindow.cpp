@@ -7,10 +7,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     //this->setFixedSize( 540,360);
     ui->setupUi(this);
-    attack();
-    /*QPalette pal = this->palette();
+    QPalette pal = this->palette();
     pal.setBrush(QPalette::Background,QBrush(QPixmap(":/Image/start.jpg")));
-    setPalette(pal);*/
+    setPalette(pal);
 
     QPainter paint(this);
     paint.setPen(QPen(Qt::green,4,Qt::SolidLine));
@@ -134,39 +133,39 @@ void MainWindow::attack()
     animation->setEndValue(QPoint(870,250));
     animation->start();
 }
-void MainWindow::on_pushButton_clicked()
-{
-    /*test*/
-//    QLabel *myAttcakLabel = new QLabel(this);
-//    myAttcakLabel->setGeometry(rect().x()+340, rect().y()+250,
-//                                    70, 40);
-//    myAttcakLabel->setParent(this);
-//    //myAttcakLabel->setVisible(true);
-//    QPixmap img1;
+//void MainWindow::on_pushButton_clicked()
+//{
+//    /*test*/
+////    QLabel *myAttcakLabel = new QLabel(this);
+////    myAttcakLabel->setGeometry(rect().x()+340, rect().y()+250,
+////                                    70, 40);
+////    myAttcakLabel->setParent(this);
+////    //myAttcakLabel->setVisible(true);
+////    QPixmap img1;
+////    img1.load(":/Image/Fire_left.png");
+////    myAttcakLabel->setPixmap(img1);
+////    QPropertyAnimation *animation = new QPropertyAnimation(myAttcakLabel, "pos");
+////    animation->setDuration(2000);
+////    animation->setEasingCurve(QEasingCurve::InQuad);
+////    animation->setStartValue(QPoint(340,250));
+////    animation->setEndValue(QPoint(870,250));
+////    animation->start();
+////    timer->start(2000);
+//    /*test*/
+//    qDebug() << "attack" << ui->skill->y()<<  endl;
+//    ui->skill->setVisible(true);
+//    QPixmap img1,img2;
 //    img1.load(":/Image/Fire_left.png");
-//    myAttcakLabel->setPixmap(img1);
-//    QPropertyAnimation *animation = new QPropertyAnimation(myAttcakLabel, "pos");
+//    ui->skill->setPixmap(img1);
+//    QPropertyAnimation *animation = new QPropertyAnimation(ui->skill, "pos");
+
+
+
+//    //qDebug() << time.elapsed()/1000 << endl;
 //    animation->setDuration(2000);
 //    animation->setEasingCurve(QEasingCurve::InQuad);
 //    animation->setStartValue(QPoint(340,250));
 //    animation->setEndValue(QPoint(870,250));
 //    animation->start();
-//    timer->start(2000);
-    /*test*/
-    qDebug() << "attack" << ui->skill->y()<<  endl;
-    ui->skill->setVisible(true);
-    QPixmap img1,img2;
-    img1.load(":/Image/Fire_left.png");
-    ui->skill->setPixmap(img1);
-    QPropertyAnimation *animation = new QPropertyAnimation(ui->skill, "pos");
 
-
-
-    //qDebug() << time.elapsed()/1000 << endl;
-    animation->setDuration(2000);
-    animation->setEasingCurve(QEasingCurve::InQuad);
-    animation->setStartValue(QPoint(340,250));
-    animation->setEndValue(QPoint(870,250));
-    animation->start();
-
-}
+//}

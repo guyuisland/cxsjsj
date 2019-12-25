@@ -7,6 +7,7 @@ Player::Player(std::string myName,int lv)
     MP=0;
     name=myName;
     level=lv;
+    crazy=false;
 }
 void Player::attack(json &sendinfo){
     sendinfo["define"]=OPTION;
@@ -74,6 +75,21 @@ int Player::monster_num(){
 
 int Player::get_HP(){
     return HP;
+}
+
+void Player::get_HP_vec(std::vector<int>& vec)
+{
+    vec[0] = HP;
+    for(int i = 0; i < 3; i++)
+    {
+        if(monster[i] != nullptr)
+        {
+            vec[i + 1] = monster[i]->get_HP();
+        }
+        else{
+            vec[i + 1] = -1;
+        }
+    }
 }
 
 int Player::get_MP(){
@@ -203,7 +219,13 @@ void Player::ski_attack_monster_HP(Skill s, int pos, bool revive){//pos = -1æ˜¯å
     }
 
     int damage = s.get_damage();
-
+    if(crazy){
+        damage = damage*2;
+    }
+    crazy = false;
+    if(s.get_crit()){
+        crazy=true;
+    }
     if(s.get_group()){
         for(unsigned int i=0;i < monster.size();i++){
             if(monster[i]!=nullptr){
@@ -239,6 +261,7 @@ void Player::delete_dead_monster(){
     for(unsigned int i=0;i<monster.size();i++){
         if(monster[i]->get_HP() <= 0){
             delete monster[i];
+            monster[i] = nullptr;
         }
     }
 }
@@ -246,4 +269,30 @@ void Player::delete_dead_monster(){
 int Player::has_obj(int monsterPos, int skiPos)
 {
     return monster[monsterPos]->has_obj(skiPos);
+}
+
+void Player::get_mon_No(std::vector<int>& monNo)
+{
+    for(int i = 0; i < 3; i++)
+    {
+        if(monster[i] != nullptr)
+        {
+            monNo[i + 1] = monster[i]->get_No();
+        }
+        else{
+            monNo[i + 1] = -1;
+        }
+    }
+}
+
+void Player::get_dead_monster(std::vector<int>& vecMon)
+{
+    for(int i = 0; i < 3; i++)
+    {
+        if(monster[i] != nullptr)
+        {
+            if(monster[i]->get_HP() <= 0)
+                vecMon.emplace_back(i + 1);
+        }
+    }
 }

@@ -56,6 +56,8 @@ void Fightenv::attack_handle(int obj)
     json sendInfo;
     me.attack(sendInfo);
     sendInfo["object"] = obj;
+    sendInfo["myName"] = me.get_name();
+    sendInfo["opponent"] = opponent.get_name();
     jsBuf = sendInfo;
     send_choice(sendInfo);
 }
@@ -63,6 +65,8 @@ void Fightenv::defend_handle()
 {
     json sendInfo;
     me.defend(sendInfo);
+    sendInfo["myName"] = me.get_name();
+    sendInfo["opponent"] = opponent.get_name();
     jsBuf = sendInfo;
     send_choice(sendInfo);
 }
@@ -70,6 +74,8 @@ void Fightenv::acc_handle()
 {
     json sendInfo;
     me.accumulate(sendInfo);
+    sendInfo["myName"] = me.get_name();
+    sendInfo["opponent"] = opponent.get_name();
     jsBuf = sendInfo;
     send_choice(sendInfo);
 }
@@ -85,6 +91,8 @@ void Fightenv::skill_handle(int monsPos, int skiNo, int obj)
 {
     json sendInfo;
     me.skill(sendInfo);
+    sendInfo["myName"] = me.get_name();
+    sendInfo["opponent"] = opponent.get_name();
     sendInfo["attacker"] = monsPos;
     sendInfo["skill_no"] = skiNo;
     sendInfo["object"] = obj;
@@ -95,7 +103,8 @@ void Fightenv::surrender_handle()
 {
     json sendInfo;
     me.surrender(sendInfo);
-
+    sendInfo["myName"] = me.get_name();
+    sendInfo["opponent"] = opponent.get_name();
     jsBuf = sendInfo;
     send_choice(sendInfo);
 }
@@ -111,10 +120,11 @@ void Fightenv::send_choice(json& sendInfo)
 
 
 void Fightenv::round_handle(){
-    json recvInfo = strWatcherPtr->result();
+    qDebug() <<"here";
+    json recvInfo = json::parse(strWatcherPtr->result());
     disconnect(strWatcherPtr, SIGNAL(finished()), this, SLOT(round_handle()));
     delete strWatcherPtr;
-
+    qDebug() <<"here1";
     cmp_excute(jsBuf,recvInfo);
     int res=game_over();
     if(res != 0)
@@ -163,7 +173,7 @@ void Fightenv::round_handle(){
     }
 
     //进入下一回合
-    //draw();
+
 
 }
 
@@ -422,29 +432,32 @@ void Fightenv::summon_summon(json& sendInfo, json& recvInfo){
     me.dec_MP(mycost);
     opponent.dec_MP(oppocost);
     //画动画
+
+    emit on_my_summon(my_obj);
+    emit on_opp_summon(opp_obj);
 }
 void Fightenv::summon_attack(json& sendInfo, json& recvInfo){
     Player* att_player, *sum_player;
     int sum_obj = -1, att_obj = -1;
+    int side = -1;
     if(sendInfo["choice"].get<int>()==ATTACK){
         att_player = &me;
         sum_player = &opponent;
         sum_obj = recvInfo["object"].get<int>();
         att_obj = sendInfo["object"].get<int>();
+        side = 1;
     }
     else{
         att_player = &opponent;
         sum_player = &me;
         sum_obj= sendInfo["object"].get<int>();
         att_obj = recvInfo["object"].get<int>();
+        side = 0;
     }
      int cost = sum_player->add_new_monster(monsterFactory->create_monster(sum_obj));
      sum_player->dec_MP(cost);
      att_player->dec_MP(1);
-     if(sum_player->get_buff(EVADE)){
-         //攻击抵挡动画
-         return;
-     }
+
      if(sum_player->get_buff(REBOUND)){
          switch(att_player->rebound_aim()+ATTACK_PLAYER){
          case ATTACK_1:{
@@ -465,8 +478,48 @@ void Fightenv::summon_attack(json& sendInfo, json& recvInfo){
          }
          }
          //攻击反弹
+         if(side)
+         {
+             emit on_update_opp_MP(1);
+             emit on_opp_summon(sum_obj);
+             emit on_update_my_MP(1);
+             emit on_my_attack(att_obj);
+             emit on_opp_rebound();
+             emit on_opp_attack(att_player->rebound_aim());
+             emit on_update_my_HP(1, 1, 1);
+         }
+         else{
+             emit on_update_my_MP(1);
+             emit on_my_summon(sum_obj);
+             emit on_update_opp_MP(1);
+             emit on_opp_attack(att_obj);
+             emit on_my_rebound();
+             emit on_my_attack(att_player->rebound_aim());
+             emit on_update_opp_HP(1, 1, 1);
+         }
+
          return;
      }
+
+     if(sum_player->get_buff(EVADE)){
+         //攻击抵挡动画
+         if(side)
+         {
+             emit on_update_opp_MP(1);
+             emit on_opp_summon(sum_obj);
+             emit on_my_attack(att_obj);
+             emit on_opp_evade(att_obj);
+         }
+         else{
+             emit on_update_my_MP(1);
+             emit on_my_summon(sum_obj);
+             emit on_opp_attack(att_obj);
+             emit on_my_evade(att_obj);
+         }
+
+         return;
+     }
+
 
     if(att_obj == ATTACK_PLAYER)
     {
@@ -478,14 +531,50 @@ void Fightenv::summon_attack(json& sendInfo, json& recvInfo){
     switch (att_obj) {
     case ATTACK_1:{
         sum_player->dec_monster_HP(0);
+        if(side)
+        {
+            emit on_update_my_MP(1);
+            emit on_my_attack(att_obj);
+            emit on_update_opp_HP(0, 1, 1);
+        }
+        else
+        {
+            emit on_update_opp_MP(1);
+            emit on_opp_attack(att_obj);
+            emit on_update_my_HP(0, 1, 1);
+        }
         break;
     }
     case ATTACK_2:{
         sum_player->dec_monster_HP(1);
+        if(side)
+        {
+            emit on_update_my_MP(1);
+            emit on_my_attack(att_obj);
+            emit on_update_opp_HP(0, 1, 1);
+        }
+        else
+        {
+            emit on_update_opp_MP(1);
+            emit on_opp_attack(att_obj);
+            emit on_update_my_HP(0, 1, 1);
+        }
         break;
     }
     case ATTACK_3:{
         sum_player->dec_monster_HP(2);
+        if(side)
+        {
+            emit on_update_my_MP(1);
+            emit on_my_attack(att_obj);
+            emit on_update_opp_HP(0, 1, 1);
+        }
+        else
+        {
+            emit on_update_opp_MP(1);
+            emit on_opp_attack(att_obj);
+            emit on_update_my_HP(0, 1, 1);
+        }
         break;
     }
     default:{
@@ -497,57 +586,96 @@ void Fightenv::summon_attack(json& sendInfo, json& recvInfo){
 }
 void Fightenv::summon_accumulate(json& sendInfo, json& recvInfo){
     Player* sum_player, *acc_player;
-    int sum_obj = -1;
+    int sum_obj = -1, side = -1;
     if(sendInfo["choice"].get<int>()==SUMMON){
         sum_player = &me;
         acc_player = &opponent;
         sum_obj = sendInfo["object"].get<int>();
+        side = 1;
     }
     else{
         sum_player = &opponent;
         acc_player = &me;
         sum_obj= recvInfo["object"].get<int>();
+        side = 0;
     }
 
     int cost = sum_player->add_new_monster(monsterFactory->create_monster(sum_obj));
     sum_player->dec_MP(cost);
     acc_player->inc_MP();
 
+    if(side)
+    {
+        emit on_update_my_MP(1);
+        emit on_my_summon(sum_obj);
+        emit on_opp_acc();
+        emit on_update_opp_MP(1);
+    }
+    else
+    {
+        emit on_update_opp_MP(1);
+        emit on_opp_summon(sum_obj);
+        emit on_my_acc();
+        emit on_update_my_MP(1);
+    }
+
 }
 void Fightenv::summon_defend(json& sendInfo, json& recvInfo){
     Player* sum_player, *def_player;
-    int sum_obj = -1;
+    int sum_obj = -1, side = -1;
     if(sendInfo["choice"].get<int>()==SUMMON){
         sum_player = &me;
         def_player = &opponent;
         sum_obj = sendInfo["object"].get<int>();
+        side = 1;
     }
     else{
         sum_player = &opponent;
         def_player = &me;
         sum_obj= recvInfo["object"].get<int>();
+        side = 0;
     }
 
     int cost = sum_player->add_new_monster(monsterFactory->create_monster(sum_obj));
     sum_player->dec_MP(cost);
 
+    if(side)
+    {
+        emit on_update_my_MP(1);
+        emit on_my_summon(sum_obj);
+        emit on_opp_defend();
+    }
+    else
+    {
+        emit on_update_opp_MP(1);
+        emit on_opp_summon(sum_obj);
+        emit on_my_defend();
+    }
 }
 void Fightenv::summon_skill(json& sendInfo, json& recvInfo){
     Player* sum_player, *ski_player;
-     int sum_obj = -1;
+     int sum_obj = -1, side = -1;
     if(sendInfo["choice"].get<int>()==SUMMON){
         sum_player = &me;
         ski_player = &opponent;
         sum_obj = sendInfo["object"].get<int>();
+        side = 1;
     }
     else{
         sum_player = &opponent;
         ski_player = &me;
         sum_obj= recvInfo["object"].get<int>();
+        side = 0;
     }
 
     int cost = sum_player->add_new_monster(monsterFactory->create_monster(sum_obj));
     sum_player->dec_MP(cost);
+
+    if(side)
+        emit on_update_my_MP(1);
+    else {
+        emit on_update_opp_MP(1);
+    }
     int attacker = sendInfo["attacker"].get<int>();
     int skillNo = sendInfo["skill_no"].get<int>();
     Skill ski= ski_player->pos_i_skill_j(attacker,skillNo);
@@ -558,16 +686,61 @@ void Fightenv::summon_skill(json& sendInfo, json& recvInfo){
         ski_player->add_buff(EVADE,ski.get_rebound().second);
     }
     ski_player->dec_MP(ski.get_cost());
+    if(side)
+        emit on_update_opp_MP(1);
+    else {
+        emit on_update_my_MP(1);
+    }
     int skiPos = sendInfo["object"].get<int>();
+    int aim = ski_player->rebound_aim();
     switch (skiPos) {
     case ATTACK_1:{
         if(sum_player->get_buff(REBOUND)){
             ski_player->ski_attack_monster_HP(ski,-1,false);
+            if(aim!=3){
+                if(side)
+                {
+                    emit on_update_opp_MP(1);
+                    emit on_opp_skill(attacker, skillNo);
+                    emit on_my_rebound();
+                    emit on_my_attack(aim);
+                    emit on_update_opp_HP(1, 1, 0);
+                }
+                else {
+                    emit on_update_my_MP(1);
+                    emit on_my_skill(attacker, skillNo);
+                    emit on_opp_rebound();
+                    emit on_opp_attack(aim);
+                    emit on_update_my_HP(1, 1, 0);
+                }
+            }
+            else{
+                if(side)
+                {
+                    emit on_update_opp_MP(1);
+                    emit on_opp_skill(attacker, skillNo);
+                }
+                else {
+                    emit on_update_my_MP(1);
+                    emit on_my_skill(attacker, skillNo);
+                }
+            }
             break;
         }
         if(sum_player->get_buff(EVADE)){
             if(ski.get_penetrate()){
                 sum_player->ski_attack_monster_HP(ski,0,false);
+                if(side)
+                {
+                    emit on_update_opp_MP(1);
+                    emit on_opp_skill(attacker, skillNo);
+                    emit on_my_evade(skiPos - ATTACK_1);
+                }
+                else {
+                    emit on_update_my_MP(1);
+                    emit on_my_skill(attacker, skillNo);
+                    emit on_opp_evade(skiPos - ATTACK_1);
+                }
             }
             break;
         }
@@ -577,11 +750,50 @@ void Fightenv::summon_skill(json& sendInfo, json& recvInfo){
     case ATTACK_2:{
         if(sum_player->get_buff(REBOUND)){
             ski_player->ski_attack_monster_HP(ski,-1,false);
+            if(aim!=3){
+                if(side)
+                {
+                    emit on_update_opp_MP(1);
+                    emit on_opp_skill(attacker, skillNo);
+                    emit on_my_rebound();
+                    emit on_my_attack(aim);
+                    emit on_update_opp_HP(1, 1, 0);
+                }
+                else {
+                    emit on_update_my_MP(1);
+                    emit on_my_skill(attacker, skillNo);
+                    emit on_opp_rebound();
+                    emit on_opp_attack(aim);
+                    emit on_update_my_HP(1, 1, 0);
+                }
+            }
+            else{
+                if(side)
+                {
+                    emit on_update_opp_MP(1);
+                    emit on_opp_skill(attacker, skillNo);
+                }
+                else {
+                    emit on_update_my_MP(1);
+                    emit on_my_skill(attacker, skillNo);
+                }
+            }
             break;
         }
         if(sum_player->get_buff(EVADE)){
             if(ski.get_penetrate()){
                 sum_player->ski_attack_monster_HP(ski,1,false);
+                if(side)
+                {
+                    emit on_update_opp_MP(1);
+                    emit on_opp_skill(attacker, skillNo);
+                    emit on_my_evade(skiPos - ATTACK_1);
+                }
+                else {
+                    emit on_update_my_MP(1);
+                    emit on_my_skill(attacker, skillNo);
+                    emit on_opp_evade(skiPos - ATTACK_1);
+                }
             }
             break;
         }
@@ -591,11 +803,50 @@ void Fightenv::summon_skill(json& sendInfo, json& recvInfo){
     case ATTACK_3:{
         if(sum_player->get_buff(REBOUND)){
             ski_player->ski_attack_monster_HP(ski,-1,false);
+            if(aim!=3){
+                if(side)
+                {
+                    emit on_update_opp_MP(1);
+                    emit on_opp_skill(attacker, skillNo);
+                    emit on_my_rebound();
+                    emit on_my_attack(aim);
+                    emit on_update_opp_HP(1, 1, 0);
+                }
+                else {
+                    emit on_update_my_MP(1);
+                    emit on_my_skill(attacker, skillNo);
+                    emit on_opp_rebound();
+                    emit on_opp_attack(aim);
+                    emit on_update_my_HP(1, 1, 0);
+                }
+            }
+            else{
+                if(side)
+                {
+                    emit on_update_opp_MP(1);
+                    emit on_opp_skill(attacker, skillNo);
+                }
+                else {
+                    emit on_update_my_MP(1);
+                    emit on_my_skill(attacker, skillNo);
+                }
+            }
             break;
         }
         if(sum_player->get_buff(EVADE)){
             if(ski.get_penetrate()){
                 sum_player->ski_attack_monster_HP(ski,2,false);
+                if(side)
+                {
+                    emit on_update_opp_MP(1);
+                    emit on_opp_skill(attacker, skillNo);
+                    emit on_my_evade(skiPos - ATTACK_1);
+                }
+                else {
+                    emit on_update_my_MP(1);
+                    emit on_my_skill(attacker, skillNo);
+                    emit on_opp_evade(skiPos - ATTACK_1);
+                }
             }
             break;
         }
@@ -608,11 +859,50 @@ void Fightenv::summon_skill(json& sendInfo, json& recvInfo){
     case ATTACK_A:{
         if(sum_player->get_buff(REBOUND)){
             ski_player->ski_attack_monster_HP(ski,-1,false);
+            if(aim!=3){
+                if(side)
+                {
+                    emit on_update_opp_MP(1);
+                    emit on_opp_skill(attacker, skillNo);
+                    emit on_my_rebound();
+                    emit on_my_attack(aim);
+                    emit on_update_opp_HP(1, 1, 0);
+                }
+                else {
+                    emit on_update_my_MP(1);
+                    emit on_my_skill(attacker, skillNo);
+                    emit on_opp_rebound();
+                    emit on_opp_attack(aim);
+                    emit on_update_my_HP(1, 1, 0);
+                }
+            }
+            else{
+                if(side)
+                {
+                    emit on_update_opp_MP(1);
+                    emit on_opp_skill(attacker, skillNo);
+                }
+                else {
+                    emit on_update_my_MP(1);
+                    emit on_my_skill(attacker, skillNo);
+                }
+            }
             break;
         }
         if(sum_player->get_buff(EVADE)){
             if(ski.get_penetrate()){
                 sum_player->ski_attack_monster_HP(ski,1,false);
+                if(side)
+                {
+                    emit on_update_opp_MP(1);
+                    emit on_opp_skill(attacker, skillNo);
+                    emit on_my_evade(skiPos - ATTACK_1);
+                }
+                else {
+                    emit on_update_my_MP(1);
+                    emit on_my_skill(attacker, skillNo);
+                    emit on_opp_evade(skiPos - ATTACK_1);
+                }
             }
             break;
         }
@@ -622,6 +912,18 @@ void Fightenv::summon_skill(json& sendInfo, json& recvInfo){
     default:{
         if(sum_player->get_buff(REBOUND)){
             ski_player->ski_attack_monster_HP(ski,-1,false);
+            if(side)
+            {
+                emit on_update_opp_MP(1);
+                emit on_opp_skill(attacker, skillNo);
+                emit on_update_my_HP(1, 1, 0);
+            }
+            else {
+                emit on_update_my_MP(1);
+                emit on_my_skill(attacker, skillNo);
+                emit on_update_opp_HP(1, 1, 0);
+            }
+
             break;
         }
         if(sum_player->get_buff(EVADE)){
@@ -637,21 +939,54 @@ void Fightenv::summon_skill(json& sendInfo, json& recvInfo){
     }
     ski_player->inc_MP(ski);
     ski_player->add_HP(ski,attacker);
+
+    vector<int> myDeadMon;
+    me.get_dead_monster(myDeadMon);
+    vector<int> oppDeadMon;
+    opponent.get_dead_monster(oppDeadMon);
+    for(int i = 0; i < myDeadMon.size(); i++)
+        emit on_my_monster_dead(i);
+    for(int i = 0; i < oppDeadMon.size(); i++)
+        emit on_opp_monster_dead(i);
+
+    if(side)
+    {
+        emit on_update_opp_MP(1);
+        emit on_update_opp_HP(1, 1, 1);
+    }
+    else{
+        emit on_update_my_MP(1);
+        emit on_update_my_HP(1, 1, 1);
+    }
+
     sum_player->delete_dead_monster();
     ski_player->delete_dead_monster();
+
+
+
 }
 void Fightenv::summon_surrender(json& sendInfo, json& recvInfo){
     Player* sum_player, *sur_player;
+    int side = -1;
     if(sendInfo["choice"].get<int>()==SUMMON){
         sum_player = &me;
         sur_player = &opponent;
+        side = 1;
     }
     else{
         sum_player = &opponent;
         sur_player = &me;
+        side = 0;
     }
 
     sur_player->surrender();
+    if(side)
+    {
+        emit on_my_win();
+    }
+    else{
+        emit on_my_lose();
+    }
 
 
 }
@@ -660,6 +995,9 @@ void Fightenv::attack_attack(json& sendInfo, json& recvInfo){
     me.dec_MP(1);
     opponent.dec_MP(1);
     //攻击抵消动画
+
+
+
 }
 void Fightenv::attack_accumulate(json& sendInfo, json& recvInfo){
     Player* att_player, *acc_player;
@@ -918,6 +1256,12 @@ void Fightenv::attack_surrender(json& sendInfo, json& recvInfo){
 void Fightenv::accumulate_accumulate(json& sendInfo, json& recvInfo){
     me.inc_MP();
     opponent.inc_MP();
+    qDebug() << "here2";
+    emit on_my_acc();
+    emit on_update_my_MP(1);
+    emit on_opp_acc();
+    emit on_update_opp_MP(1);
+
 }
 void Fightenv::accumulate_defend(json& sendInfo, json& recvInfo){
     Player* acc_player, *def_player;
@@ -1389,4 +1733,33 @@ void Fightenv::surrender_surrender(json& sendInfo, json& recvInfo){
 int Fightenv::has_obj(int monsterPos, int skiPos)
 {
     return  me.has_obj(monsterPos, skiPos);
+}
+
+void Fightenv::get_my_monster(vector<int>& myMon)
+{
+    myMon.resize(4);
+    myMon[0] = -1;
+    me.get_mon_No(myMon);
+}//myMonster[4];//自己什么位置是什么怪物
+void Fightenv::get_opp_monster(vector<int>& oppMon)
+{
+    oppMon.resize(4);
+    oppMon[0] = -1;
+    opponent.get_mon_No(oppMon);
+}//int oppMonster[4];//对方什么位置是什么怪物
+void Fightenv::get_my_blood(vector<int>& myHp)
+{
+    myHp.resize(4);
+    me.get_HP_vec(myHp);
+}//int myBlood[4];
+void Fightenv::get_opp_blood(vector<int>& oppHp)
+{
+    oppHp.resize(4);
+    opponent.get_HP_vec(oppHp);
+}//int oppBlood[4];
+void Fightenv::get_MP(vector<int>& vecMp)
+{
+    vecMp.resize(2);
+    vecMp[0] = me.get_MP();
+    vecMp[1] = opponent.get_MP();
 }

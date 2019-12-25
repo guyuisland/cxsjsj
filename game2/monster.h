@@ -12,6 +12,7 @@ class Monster
 {
 public:
     std::string get_name();
+    int get_No();
     int get_cost();
     int get_HP();
     bool dec_HP(int num);
@@ -27,6 +28,7 @@ protected:
 	int callTimes;
 	std::string name;
     std::vector<Skill> skills;
+    int No;
 };
 
 class Mage: public Monster

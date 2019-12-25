@@ -12,8 +12,9 @@
 #include <QDebug>
 
 
-GameLobby::GameLobby(ClientSocket *client,  json & recvInfo, QWidget *parent) :
+GameLobby::GameLobby(ClientSocket *client, json & recvInfo, FightUI *fightui, QWidget *parent) :
     QDialog(parent),
+    _fight(fightui),
     _client(client),
     ui(new Ui::GameLobby)
 {
@@ -33,8 +34,9 @@ GameLobby::GameLobby(ClientSocket *client,  json & recvInfo, QWidget *parent) :
 
     //刷新用户名、waiting列表
     myName = QString::fromStdString(recvInfo["myName"].get<string>());
+    myLv = recvInfo["myLv"].get<int>();
     QString str = "Username: " + myName;
-    ui->level->setText("Lv:" + QString(recvInfo["myLv"].get<int>()));
+    ui->level->setText("Lv:" + QString(myLv));
 
     wList = recvInfo["wList"].get<std::vector<std::string>>();
     int size = wList.size(), i = 0;
@@ -207,8 +209,9 @@ void GameLobby::invite_handle()
         sendInfo["opponent"] = recvInfo["myName"];
         if(msg.exec() == QMessageBox::Yes)
         {
-            emit clicked(1);
             sendInfo["option"] = ACCEPT;
+            _fight->init_player(myName, invitedName, myLv,1);
+            emit clicked(1);
 
         }
         else if(msg.exec() == QMessageBox::No){
@@ -301,7 +304,9 @@ void GameLobby::reply_handle()
             msg.setStandardButtons(QMessageBox::Ok);
             if(msg.exec() == QMessageBox::Ok)
             {
+                _fight->init_player(myName, invitedName, myLv,1);
                 emit clicked(1);
+
             }
         }
         else if(recvInfo["option"] == REFUSE)

@@ -21,10 +21,12 @@ FightUI::FightUI(ClientSocket *client, QWidget *parent) :
     connect(timer, SIGNAL(timeout()), this, SLOT(hide_ski_anm()));
     connect(timer2, SIGNAL(timeout()), this, SLOT(hide_ski_anm()));
     fightEnv = new Fightenv(_client);
-    rebound_ski();
-    renew_enemy_monster();
+
+    init_connect();
+    //rebound_ski();
     //attack();
 }
+
 void FightUI::rebound_ski()
 {
     rebound = new QLabel;
@@ -42,11 +44,39 @@ void FightUI::init_player(QString &myName, QString &oppName, int myLv, int oppLv
 {
     fightEnv->set_players(Player(myName.toStdString(), myLv), Player(oppName.toStdString(), oppLv));
 }
-void FightUI::reshow_my_HP()
+//void FightUI::renew_MP(vector<int> MP)
+//{
+//    ui->myMP->setValue(MP[0]);
+//    ui->myMP->setValue(MP[1]);
+//}
+void FightUI::renew_my_blood(vector<int> myMonster, vector<int> myBlood)
 {
-
+    QProgressBar *myptr[4] = {ui->myBlood,ui->myMonblood_1,ui->myMonblood_2,ui->myMonblood_3};
+    for (unsigned int i = 0; i < 4; i++) {
+        if(myMonster[i] >= 0)
+        {
+            myptr[i]->setVisible(true);
+            myptr[i]->setValue(myBlood[i]);
+        }
+        else {
+            myptr[i]->setVisible(false);
+        }
+    }
 }
-
+void FightUI::renew_enemy_blood(vector<int> eneMonster, vector<int> eneBlood)
+{
+    QProgressBar *myptr[4] = {ui->myBlood,ui->myMonblood_1,ui->myMonblood_2,ui->myMonblood_3};
+    for (unsigned int i = 0; i < 4; i++) {
+        if(eneMonster[i] >= 0)
+        {
+            myptr[i]->setVisible(true);
+            myptr[i]->setValue(eneBlood[i]);
+        }
+        else {
+            myptr[i]->setVisible(false);
+        }
+    }
+}
 QPixmap FightUI::PixmapToRound(const QPixmap &src, int radius)
 {
     if (src.isNull()) {
@@ -73,22 +103,28 @@ void FightUI::hide_summon()
     ui->summon_monster2->setVisible(false);
     ui->summon_monster3->setVisible(false);
 }
-void FightUI::show_blood()
+void FightUI::show_blood(vector<int> myMonster,vector<int> oppMonster,vector<int> myMonBlood,vector<int> eneMonBlood)
 {
     QProgressBar *myptr[4] = {ui->myBlood,ui->myMonblood_1,ui->myMonblood_2,ui->myMonblood_3};
-    for (int i = 0; i < 4; i++) {
-        if(myObjectExist[i] == 1)
+    for (unsigned int i = 0; i < 4; i++) {
+        if(myMonster[i] >= 0)
         {
             myptr[i]->setVisible(true);
             myptr[i]->setValue(myMonBlood[i]);
         }
+        else {
+            myptr[i]->setVisible(false);
+        }
     }
     QProgressBar *enemyptr[4] = {ui->eneBlood,ui->eneMonblood_1,ui->eneMonblood_2,ui->eneMonblood_3};
-    for (int i = 0; i < 4; i++) {
-        if(eneObjectExist[i] == 1)
+    for (unsigned int i = 0; i < 4; i++) {
+        if(oppMonster[i] == 1)
         {
             enemyptr[i]->setVisible(true);
             enemyptr[i]->setValue(eneMonBlood[i]);
+        }
+        else {
+            myptr[i]->setVisible(false);
         }
     }
 }
@@ -129,22 +165,39 @@ void FightUI::show_summon()
     ui->summon_monster2->setVisible(true);
     ui->summon_monster3->setVisible(true);
 }
-void FightUI::renew_enemy_monster()
+void FightUI::renew_enemy_monster(vector<int> oppMonster)
 {
-    QPixmap img1;
-    img1.load(":/Image/ball.png");
-    QMovie *movie;
     QLabel *p;
-    //100,100为QLabel的宽高
-    QPixmap pixMap= img1.scaled(100,100, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    //50为圆形的半径
-    pixMap =  PixmapToRound(pixMap, 50);
-    ui->enemy_label->setPixmap(pixMap);
-
-    for (int i = 1;i < 4; i++) {
-        if(EnemySummonSeq[i] != -1)
+    QMovie *movie;
+    for (unsigned int i = 1;i < 4; i++) {
+        if(oppMonster[i] != -1)
         {
-            movie = new QMovie(EnePhotoAdd[EnemySummonSeq[i]].c_str());
+            movie = new QMovie(EnePhotoAdd[oppMonster[i]].c_str());
+            if(i == 1){
+                p = ui->enemy_monster1;
+            }
+            else if(i == 2){
+                p = ui->enemy_monster2;
+            }
+            else if(i == 3){
+                p = ui->enemy_monster3;
+            }
+            p->setMovie(movie);
+            //设置图片的大小
+            movie->setScaledSize(QSize(200,200));
+            movie->start();
+        }
+    }
+
+}
+void FightUI::renew_my_monster(vector<int> myMonster)
+{
+    QLabel *p;
+    QMovie *movie;
+    for (unsigned int i = 1;i < 4; i++) {
+        if(myMonster[i] != -1)
+        {
+            movie = new QMovie(EnePhotoAdd[myMonster[i]].c_str());
             if(i == 1){
                 p = ui->enemy_monster1;
             }
@@ -272,6 +325,49 @@ void FightUI::InitUi()
     ui->summon_monster2->setVisible(1);
     hide_summon();
 
+    /*画出对方的本体*/
+    img1.load(":/Image/ball.png");
+
+    //100,100为QLabel的宽高
+    pixMap= img1.scaled(100,100, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    //50为圆形的半径
+    pixMap =  PixmapToRound(pixMap, 50);
+    ui->enemy_label->setPixmap(pixMap);
+
+}
+
+void FightUI::init_connect()
+{
+    connect(fightEnv, SIGNAL(fightEnv->on_my_attack(int)), this, SLOT(my_attack(int)));
+    connect(fightEnv, SIGNAL(fightEnv->on_my_defend()), this, SLOT(my_defend()));
+    connect(fightEnv, SIGNAL(fightEnv->on_my_acc()), this, SLOT(my_acc()));
+    connect(fightEnv, SIGNAL(fightEnv->on_my_summon(int)), this, SLOT(my_summon(int)));
+    connect(fightEnv, SIGNAL(fightEnv->on_my_surrender()), this, SLOT(my_surrender()));
+    connect(fightEnv, SIGNAL(fightEnv->on_my_win()), this, SLOT(my_win()));
+    connect(fightEnv, SIGNAL(fightEnv->on_my_lose()), this, SLOT(my_lose()));
+    connect(fightEnv, SIGNAL(fightEnv->on_my_monster_dead(int)), this, SLOT(my_monster_dead(int)));
+    connect(fightEnv, SIGNAL(fightEnv->on_my_skill(int, int)), this, SLOT(my_skill(int, int)));
+    connect(fightEnv, SIGNAL(fightEnv->on_my_rebound()), this, SLOT(my_rebound()));
+    connect(fightEnv, SIGNAL(fightEnv->on_my_evade(int)), this, SLOT(my_evade(int)));
+    connect(fightEnv, SIGNAL(fightEnv->on_my_heal(int)), this, SLOT(my_heal(int)));
+    connect(fightEnv, SIGNAL(fightEnv->on_update_my_HP(int,int,int)), this, SLOT(update_my_HP(int,int,int)));
+    connect(fightEnv, SIGNAL(fightEnv->on_update_my_MP(int)), this, SLOT(update_my_MP(int)));
+
+
+    connect(fightEnv, SIGNAL(fightEnv->on_opp_attack(int)), this, SLOT(opp_attack(int)));
+    connect(fightEnv, SIGNAL(fightEnv->on_opp_defend()), this, SLOT(opp_defend()));
+    connect(fightEnv, SIGNAL(fightEnv->on_opp_acc()), this, SLOT(opp_acc()));
+    connect(fightEnv, SIGNAL(fightEnv->on_opp_summon(int)), this, SLOT(opp_summon(int)));
+    connect(fightEnv, SIGNAL(fightEnv->on_opp_surrender()), this, SLOT(opp_surrender()));
+    connect(fightEnv, SIGNAL(fightEnv->on_opp_monster_dead(int)), this, SLOT(opp_monster_dead(int)));
+    connect(fightEnv, SIGNAL(fightEnv->on_opp_skill(int,int)), this, SLOT(on_opp_skill(int,int)));
+    connect(fightEnv, SIGNAL(fightEnv->on_opp_rebound()), this, SLOT(opp_rebound()));
+    connect(fightEnv, SIGNAL(fightEnv->on_opp_evade(int)), this, SLOT(opp_evade(int)));
+    connect(fightEnv, SIGNAL(fightEnv->on_opp_heal(int)), this, SLOT(opp_heal(int)));
+    connect(fightEnv, SIGNAL(fightEnv->on_update_opp_HP(int,int,int)), this, SLOT(update_opp_HP(int,int,int)));
+    connect(fightEnv, SIGNAL(fightEnv->on_update_opp_MP(int)), this, SLOT(update_opp_MP(int)));
+
+    connect(fightEnv, SIGNAL(fightEnv->on_server_timeout()), this, SLOT(server_timeout()));
 }
 void FightUI::summon_monster(int n)
 {
@@ -293,12 +389,16 @@ void FightUI::summon_monster(int n)
     movie->setScaledSize(QSize(200,200));
     movie->start();
     monsterNum++;
-    show_blood();
+    //show_blood();
 
 }
 void FightUI::renew_skill(int seq)
 {
-    if(seq == 0)
+    skill[0] = skillDes[seq][0];
+    skill[1] = skillDes[seq][1];
+    skill[2] = skillDes[seq][2];
+    skill[3] = skillDes[seq][3];
+    /*if(seq == 0)
     {
         skill[0] = "防御";
         skill[1] = "攻击";
@@ -307,10 +407,10 @@ void FightUI::renew_skill(int seq)
     }
     if(seq == 1)
     {
-        skill[0] = "白居易";
-        skill[1] = "李白";
-        skill[2] = "杜甫";
-        skill[3] = "孙膑";
+        skill[0] = "Mage";
+        skill[1] = "Sprite";
+        skill[2] = "Pegasus";
+        skill[3] = "Scorpicore";
     }
     if(seq == 2)
     {
@@ -318,7 +418,7 @@ void FightUI::renew_skill(int seq)
         skill[1] = "B";
         skill[2] = "C";
         skill[3] = "D";
-    }
+    }*/
 }
 void FightUI::skill_des(int seq)
 {
@@ -338,7 +438,7 @@ void FightUI::submit()
 }
 void FightUI::use_skill()
 {
-    attack();
+    //attack();
     if(ObjectSelect == 0  && monsterNum <= 3)//召唤
     {
         if(SkillSelect == 3)
@@ -362,7 +462,7 @@ void FightUI::use_skill()
     {
         attack();
     }
-    show_blood();
+    //show_blood();
 }
 
 bool FightUI::eventFilter(QObject *obj, QEvent *event)
@@ -879,8 +979,12 @@ void FightUI::my_acc()//我方蓄气
 {
     QString str = "我方蓄气";
     ui->message->setText(str);
+    qDebug() << "here3";
     myMP += 10;
     messageTimer->start(1000);
+    vector<int> MP;
+    fightEnv->get_MP(MP);
+    ui->enemyMP->setValue(MP[0]);
 }
 void FightUI::my_summon(int monsterNO)//怪兽编号为monsterNO
 {
@@ -888,12 +992,23 @@ void FightUI::my_summon(int monsterNO)//怪兽编号为monsterNO
     ui->message->setText(str);
     messageTimer->start(1000);
     myMP -= sumConsume[monsterNO];
+    vector<int> myMonster,myBlood;
+    fightEnv->get_my_monster(myMonster);
+    fightEnv->get_my_blood(myBlood);
+    renew_my_monster(myMonster);
+    renew_my_blood(myMonster,myBlood);
 }
 void FightUI::my_monster_dead(int pos)//pos位置上怪兽死亡
 {
     QString str = "第" + QString::number(pos) +"号怪物死亡" ;
     ui->message->setText(str);
     messageTimer->start(1000);
+
+//    vector<int> myMonster,myBlood
+//    fightEnv->get_my_monster(myMonster);
+//    fightEnv->get_my_blood(myBlood);
+//    renew_my_monster(myMonster);
+//    renew_my_blood(myMonster,myBlood);
 }
 void FightUI::my_skill(int pos, int skiNo)//pos位置上的skiNo号技能
 {
@@ -920,20 +1035,47 @@ void FightUI::my_lose()
     ui->message->setText(str);
     messageTimer->start(1000);
 }
+
+void FightUI::my_rebound()
+{
+    rebound = new QLabel;
+    rebound->setGeometry(rect().x()+340, rect().y()+250,
+                                    50, 100);
+    rebound->setParent(this);
+    QMovie *movie = new QMovie(":/Image/rebound.gif");
+    rebound->setMovie(movie);
+    //设置图片的大小
+    movie->setScaledSize(QSize(50,100));
+    movie->start();
+    QString str = "反弹敌方进攻";
+    ui->message->setText(str);
+    timer2->start(2000);
+    messageTimer->start(1000);
+
+}
+
+void FightUI::my_evade(int pos)
+{
+
+}
+
+void FightUI::my_heal(int pos)
+{
+
+}
+
 void FightUI::update_my_HP(int mode, int pos, int value)//mode为1是+，0是-，pos为位置，value为变化的数值
 {
-    if(mode)
-    {
-        myMonBlood[pos] += value;
-    }
-    else {
-        myMonBlood[pos] -= value;
-    }
-    show_blood();
+    vector<int> myMonster,myBlood;
+    fightEnv->get_my_monster(myMonster);
+    fightEnv->get_my_blood(myBlood);
+    renew_my_blood(myMonster,myBlood);
 }
 void FightUI::update_my_MP(int value)//value为变化的数值
 {
-    myMP -= value;
+    vector<int> MP;
+    fightEnv->get_MP(MP);
+    ui->enemyMP->setValue(MP[0]);
 }
 
 void FightUI::opp_attack(int pos)//攻击了对面pos位置
@@ -961,6 +1103,14 @@ void FightUI::opp_attack(int pos)//攻击了对面pos位置
     ui->message->setText(str);
     timer->start(2000);
     messageTimer->start(1000);
+
+    vector<int> myMonster,eneMonster,myblood,eneblood;
+    fightEnv->get_my_monster(myMonster);
+    fightEnv->get_opp_monster(eneMonster);
+    fightEnv->get_my_blood(myblood);
+    fightEnv->get_opp_blood(eneblood);
+    renew_enemy_monster(eneMonster);
+    show_blood(myMonster,eneMonster,myblood,eneblood);
 }
 
 void FightUI::opp_defend()
@@ -986,20 +1136,38 @@ void FightUI::opp_acc()
     ui->message->setText(str);
     eneMP += 10;
     messageTimer->start(1000);
+    vector<int> MP;
+    fightEnv->get_MP(MP);
+    ui->enemyMP->setValue(MP[1]);
 }
 void FightUI::opp_summon(int monsterNO)//怪兽编号为monsterNO
 {
-    QString str = "敌方召唤第" + QString::number(monsterNO) +"号怪物" ;
+    int pos;
+    QString str = "敌方在位置"+QString::number(pos)+ "召唤第" + QString::number(monsterNO) +"号怪物" ;
+    enemonsterNum++;
     ui->message->setText(str);
     messageTimer->start(1000);
     eneMP -= sumConsume[monsterNO];
+
+    vector<int> eneMonster,eneblood;
+    fightEnv->get_opp_monster(eneMonster);
+    fightEnv->get_opp_blood(eneblood);
+    renew_enemy_monster(eneMonster);
+    renew_enemy_blood(eneMonster,eneblood);
 }
 
 void FightUI::opp_monster_dead(int pos)//pos位置上怪兽死亡
 {
+    eneObjectExist[pos] = 0;
+    EnemySummonSeq[pos] = -1;
     QString str = "敌方第" + QString::number(pos) +"号怪物死亡" ;
     ui->message->setText(str);
     messageTimer->start(1000);
+
+    vector<int> eneMonster,eneblood;
+    fightEnv->get_opp_monster(eneMonster);
+    fightEnv->get_opp_blood(eneblood);
+    renew_enemy_monster(eneMonster);
 }
 
 void FightUI::opp_skill(int pos, int skiNo)//pos位置上的skiNo号技能
@@ -1015,20 +1183,46 @@ void FightUI::opp_surrender()
     ui->message->setText(str);
     messageTimer->start(1000);
 }
+
+void FightUI::opp_rebound()
+{
+    rebound = new QLabel;
+    rebound->setGeometry(rect().x()+870, rect().y()+250,
+                                    50, 100);
+    rebound->setParent(this);
+    QMovie *movie = new QMovie(":/Image/rebound.gif");
+    rebound->setMovie(movie);
+    //设置图片的大小
+    movie->setScaledSize(QSize(50,100));
+    movie->start();
+    QString str = "敌方反弹我方进攻";
+    ui->message->setText(str);
+    timer2->start(1000);
+    messageTimer->start(1000);
+}
+
+void FightUI::opp_evade(int )
+{
+
+}
+
+void FightUI::opp_heal(int )
+{
+
+}
+
 void FightUI::update_opp_HP(int mode, int pos, int value)//mode为1是+，0是-，pos为位置，value为变化的数值
 {
-    if(mode)
-    {
-        eneMonBlood[pos] += value;
-    }
-    else {
-        eneMonBlood[pos] -= value;
-    }
-    show_blood();
+    vector<int> eneMonster,eneBlood;
+    fightEnv->get_opp_monster(eneMonster);
+    fightEnv->get_opp_blood(eneBlood);
+    renew_enemy_blood(eneMonster,eneBlood);
 }
 void FightUI::update_opp_MP(int value)//value为变化的数值
 {
-    eneMP -= value;
+    vector<int> MP;
+    fightEnv->get_MP(MP);
+    ui->enemyMP->setValue(MP[1]);
 }
 
 void FightUI::serv_timeout()//服务器超时
@@ -1037,3 +1231,17 @@ void FightUI::serv_timeout()//服务器超时
     ui->message->setText(str);
     messageTimer->start(1000);
 }
+/*void FightUI::renew_massage()
+{
+    vector<int> myMonster,eneMonster,myblood,eneblood,MP;
+    fightEnv->get_my_monster(myMonster);
+    fightEnv->get_opp_monster(eneMonster);
+    fightEnv->get_my_blood(myblood);
+    fightEnv->get_opp_blood(eneblood);
+    fightEnv->get_MP(MP);
+    renew_MP(MP);
+    renew_my_monster(myMonster);
+    renew_enemy_monster(eneMonster);
+    show_blood(myMonster,eneMonster,myblood,eneblood);
+
+}*/

@@ -25,7 +25,7 @@ class GameLobby : public QDialog
     Q_OBJECT
 
 public:
-    explicit GameLobby(ClientSocket *client, json &, QWidget *parent = nullptr);
+    explicit GameLobby(ClientSocket *client, json &, FightUI*, QWidget *parent = nullptr);
     ~GameLobby();
 
 public slots:
@@ -53,13 +53,14 @@ private:
 
 
     Ui::GameLobby *ui;
-    FightUI *FightUIWin;
+    FightUI *_fight;
     void InitUi();
     void SetUserList();
     void mousePressEvent(QMouseEvent *event);
     void OpenFightWin();
     void reshow();
     QString myName;
+    int myLv;
     std::vector<std::string> wList;
 
     ClientSocket *_client;//与服务器连接的socket

@@ -41,8 +41,12 @@ public slots:
     void my_surrender();
     void my_win();
     void my_lose();
+    void my_rebound();
+    void my_evade(int );
+    void my_heal(int );
     void update_my_HP(int , int, int);
     void update_my_MP(int);
+
 
     void opp_attack(int );
     void opp_defend();
@@ -51,6 +55,9 @@ public slots:
     void opp_monster_dead(int );
     void opp_skill(int , int);
     void opp_surrender();
+    void opp_rebound();
+    void opp_evade(int );
+    void opp_heal(int );
     void update_opp_HP(int , int, int);
     void update_opp_MP(int);
 
@@ -71,11 +78,17 @@ private:
     void renew_skill(int seq);
     void hide_summon();
     void show_summon();
+    void init_connect();
     void summon_monster(int n);
-    void renew_enemy_monster();
-    void show_blood();
+    void renew_enemy_monster(vector<int> );
+    void show_blood(vector<int> ,vector<int>,vector<int> ,vector<int>);
     void get_add(QMovie *movie, int seq);
     void reshow_my_HP();
+    void renew_my_monster(vector<int> );
+    //void renew_massage();
+    void renew_MP(vector<int>);
+    void renew_my_blood(vector<int> ,vector<int>);
+    void renew_enemy_blood(vector<int> ,vector<int>);
 
     MyLabel *myLabel;
     QPixmap PixmapToRound(const QPixmap &src, int radius);
@@ -84,20 +97,23 @@ private:
     int ObjectSelect = -1;
     int SkillSelect = -1;
     int monsterNum = 1;
+    int enemonsterNum = 1;
     int MySummonSeq[4] = {-1,-1,-1,-1};//我召唤在某个位置是哪个怪物
-    int myMonBlood[4] = {100,100,100,100};//我的怪物血量
-    int eneMonBlood[4] =  {10,10,10,10};//敌人怪物血量
+    //int myMonBlood[4] = {100,100,100,100};//我的怪物血量
+    //int eneMonBlood[4] =  {10,10,10,10};//敌人怪物血量
     int myMP = 100;
     int eneMP = 100;
     int sumConsume[4] = {0,20,30,40};
-    int EnemySummonSeq[4] = {-1,3,1,2};//敌人召唤某个位置是什么怪物
+    QString skillDes[4][4] = { {"防御","攻击","蓄积能量","召唤"}};
+    int EnemySummonSeq[4] = {-1,-1,-1,-1};//敌人召唤某个位置是什么怪物
     bool myObjectExist[4] = {1,0,0,0};//怪物是否已经被召唤
-    bool eneObjectExist[4] = {1,1,1,1};//怪物是否已经被召唤
+    bool eneObjectExist[4] = {1,0,0,0};//怪物是否已经被召唤
     bool SummonExist[4] = {1,0,0,0};//使用召唤技能时显示
     string PhotoAdd[4] = {":/Image/charizard_left.gif",":/Image/dodrio_left.gif",":/Image/lapras_left.gif",":/Image/talonflame_left.gif"};
     string EnePhotoAdd[4] = {":/Image/charizard.gif",":/Image/dodrio.gif",":/Image/lapras.gif",":/Image/talonflame.gif"};
     void use_skill();
     void attack();
+
     int temp = 0;
     int eneMonSelect = -1;
     //void enterEvent(QEvent *event);

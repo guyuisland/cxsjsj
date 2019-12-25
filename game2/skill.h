@@ -1,12 +1,13 @@
-#ifndef SKILL_H
+﻿#ifndef SKILL_H
 #define SKILL_H
 
 #include<string>
+#include<QString>
 class Skill
 {
 public:
     Skill();
-    Skill(int ,std::pair<bool,int> ,std::pair<bool,int> ,bool ,bool ,bool ,bool , bool, bool,int ,int );
+    Skill(int ,std::pair<bool,int> ,std::pair<bool,int> ,QString, QString, bool ,bool ,bool ,bool , bool, bool,int ,int);
     ~Skill();
     Skill(const Skill& copied);
     void set_describe(std::string str);
@@ -18,10 +19,12 @@ public:
     bool get_group();
     bool get_penetrate();
     bool get_addMP();
+    bool get_crit();
 
     std::pair<bool,int> get_evade();
     std::pair<bool,int> get_rebound();
-    std::string get_describe();
+    QString get_name();
+    QString get_describe();
 private:
     //std::string describe;
     int costEnergy;//消耗能量
@@ -33,6 +36,8 @@ private:
     bool revive;//复活
     int damage;//伤害
     int heal;//治愈
+    QString name;//技能名称
+    QString description;//技能描述
     std::pair<bool,int> evade;//闪避
     std::pair<bool,int> rebound;//反弹
 };

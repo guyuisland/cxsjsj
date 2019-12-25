@@ -47,6 +47,14 @@ public:
     //根据UI获得选择转到相应处理逻辑
     void dispatch(int , int , int );
 
+
+    //UI相关接口
+    void get_my_monster(vector<int>&);//myMonster[4];//自己什么位置是什么怪物
+    void get_opp_monster(vector<int>&);//int oppMonster[4];//对方什么位置是什么怪物
+    void get_my_blood(vector<int>&);//int myBlood[4];
+    void get_opp_blood(vector<int>&);//int oppBlood[4];
+    void get_MP(vector<int>&);//int myBlood[4];
+
 signals:
     //动画槽函数
     void on_my_attack(int );
@@ -58,6 +66,9 @@ signals:
     void on_my_surrender();
     void on_my_win();
     void on_my_lose();
+    void on_my_rebound();
+    void on_my_evade(int );
+    void on_my_heal(int );
     void on_update_my_HP(int , int, int);
     void on_update_my_MP(int);
 
@@ -68,6 +79,9 @@ signals:
     void on_opp_monster_dead(int );
     void on_opp_skill(int , int);
     void on_opp_surrender();
+    void on_opp_rebound();
+    void on_opp_evade(int );
+    void on_opp_heal(int );
     void on_update_opp_HP(int , int, int);
     void on_update_opp_MP(int);
 

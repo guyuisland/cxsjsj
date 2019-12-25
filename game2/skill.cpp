@@ -1,6 +1,6 @@
-#include "skill.h"
+﻿#include "skill.h"
 
-Skill::Skill(int cost,std::pair<bool,int> evd,std::pair<bool,int> reb, bool Group=false, bool Kill = false, bool Penetrate = false, bool critical=false,bool AddMP=false, bool Revive=false,int Damage = false,int Heal = false) {
+Skill::Skill(int cost,std::pair<bool,int> evd,std::pair<bool,int> reb, QString Name, QString Descp, bool Group=false, bool Kill = false, bool Penetrate = false, bool critical=false,bool AddMP=false, bool Revive=false,int Damage = false,int Heal = false) {
     //describe = desc;
     costEnergy = cost;
     group = Group;
@@ -13,6 +13,8 @@ Skill::Skill(int cost,std::pair<bool,int> evd,std::pair<bool,int> reb, bool Grou
     crit=critical;
     addMP=AddMP;
     revive=Revive;
+    name = Name;
+    description = Descp;
 }
 Skill::Skill(const Skill& copied) {
     //describe = copied.describe;
@@ -27,6 +29,8 @@ Skill::Skill(const Skill& copied) {
     crit=copied.crit;
     addMP=copied.addMP;
     revive=copied.revive;
+    name = copied.name;
+    description = copied.description;
 }
 Skill::Skill()
 {
@@ -47,8 +51,12 @@ void Skill::set_describe(std::string str) {
     //describe = str;
 }
 
-std::string Skill::get_describe() {
-    //return describe;
+QString Skill::get_name() {
+    return name;
+}
+
+QString Skill::get_describe() {
+    return description;
 }
 
 int Skill::get_cost(){
@@ -56,12 +64,10 @@ int Skill::get_cost(){
 }
 
 int Skill::get_damage(){
-    if(crit){
-        return damage*2;
-    }
-    else{
-        return damage;
-    }
+    return damage;
+}
+bool Skill::get_crit(){
+    return crit;
 }
 int Skill::get_heal(){
     return heal;
