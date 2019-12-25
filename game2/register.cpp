@@ -8,9 +8,7 @@ Register::Register(QWidget *parent) :
     ui(new Ui::Register)
 {
     ui->setupUi(this);
-    //QPalette pal = this->palette();
-    //setBrush(QPalette::Background,QBrush(QPixmap(":/Image/register.jpg")));
-    //setPalette(pal);
+
 }
 
 Register::~Register()

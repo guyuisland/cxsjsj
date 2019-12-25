@@ -41,6 +41,8 @@ private slots:
 
 
 
+    void on_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     Register *register_win;
@@ -49,6 +51,9 @@ private:
     //int conn_code;//是否连接成功
     StackWidget* _stackWidget;
     QFutureWatcher<int> *wp ;
+    QTimer *timer;
+    QLabel *rebound;
+    void attack();
 };
 
 #endif // MAINWINDOW_H

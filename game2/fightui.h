@@ -75,6 +75,7 @@ private:
     void renew_enemy_monster();
     void show_blood();
     void get_add(QMovie *movie, int seq);
+    void reshow_my_HP();
 
     MyLabel *myLabel;
     QPixmap PixmapToRound(const QPixmap &src, int radius);
@@ -86,6 +87,9 @@ private:
     int MySummonSeq[4] = {-1,-1,-1,-1};//我召唤在某个位置是哪个怪物
     int myMonBlood[4] = {100,100,100,100};//我的怪物血量
     int eneMonBlood[4] =  {10,10,10,10};//敌人怪物血量
+    int myMP = 100;
+    int eneMP = 100;
+    int sumConsume[4] = {0,20,30,40};
     int EnemySummonSeq[4] = {-1,3,1,2};//敌人召唤某个位置是什么怪物
     bool myObjectExist[4] = {1,0,0,0};//怪物是否已经被召唤
     bool eneObjectExist[4] = {1,1,1,1};//怪物是否已经被召唤
@@ -99,6 +103,7 @@ private:
     //void enterEvent(QEvent *event);
     QTimer *timer;
     QTimer *timer2;
+    QTimer *messageTimer;
     Fightenv *fightEnv;//记录战斗场面信息
     void submit();
 
@@ -108,6 +113,10 @@ private:
     int monsterselect = 0;
     QLabel *rebound;
     void rebound_ski();//
+    
+    
+    QLabel *myAttackLabel;
+    QLabel *eneAttackLabel;
 };
 
 #endif // FIGHTUI_H

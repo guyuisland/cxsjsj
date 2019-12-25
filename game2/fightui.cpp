@@ -23,17 +23,18 @@ FightUI::FightUI(ClientSocket *client, QWidget *parent) :
     fightEnv = new Fightenv(_client);
     rebound_ski();
     renew_enemy_monster();
+    //attack();
 }
 void FightUI::rebound_ski()
 {
     rebound = new QLabel;
     rebound->setGeometry(rect().x()+745, rect().y()+375,
-                                    100, 50);
+                                    50, 100);
     rebound->setParent(this);
     QMovie *movie = new QMovie(":/Image/rebound.gif");
     rebound->setMovie(movie);
     //设置图片的大小
-    movie->setScaledSize(QSize(250,250));
+    movie->setScaledSize(QSize(50,100));
     movie->start();
     timer2->start(2000);
 }
@@ -41,7 +42,10 @@ void FightUI::init_player(QString &myName, QString &oppName, int myLv, int oppLv
 {
     fightEnv->set_players(Player(myName.toStdString(), myLv), Player(oppName.toStdString(), oppLv));
 }
+void FightUI::reshow_my_HP()
+{
 
+}
 
 QPixmap FightUI::PixmapToRound(const QPixmap &src, int radius)
 {
@@ -90,12 +94,12 @@ void FightUI::show_blood()
 }
 void FightUI::attack()
 {
-    qDebug() << "attack" << ui->mymonSkill_1->y()<<  endl;
-    ui->mymonSkill_1->setVisible(true);
+    QLabel *label = new QLabel(this);
+    label->setVisible(true);
     QPixmap img1,img2;
     img1.load(":/Image/Fire_left.png");
-    ui->mymonSkill_1->setPixmap(img1);
-    QPropertyAnimation *animation = new QPropertyAnimation(ui->mymonSkill_1, "pos");
+    label->setPixmap(img1);
+    QPropertyAnimation *animation = new QPropertyAnimation(label, "pos");
 
 
 
@@ -106,14 +110,11 @@ void FightUI::attack()
     animation->setEndValue(QPoint(870,250));
     animation->start();
     timer->start(2000);
-
-
-
 }
 
 void FightUI::hide_ski_anm()
 {
-    ui->mymonSkill_1->setVisible(false);
+    myAttackLabel->setVisible(false);
 }
 void FightUI::show_summon()
 {
@@ -337,6 +338,7 @@ void FightUI::submit()
 }
 void FightUI::use_skill()
 {
+    attack();
     if(ObjectSelect == 0  && monsterNum <= 3)//召唤
     {
         if(SkillSelect == 3)
@@ -833,93 +835,205 @@ void FightUI::on_pushButton_clicked()
 //动画槽函数
 void FightUI::my_attack(int pos)//攻击了对面pos位置
 {
-
+    myAttackLabel = new QLabel(this);
+    myAttackLabel->setVisible(true);
+    QPixmap img1,img2;
+    img1.load(":/Image/Fire_left.png");
+    myAttackLabel->setPixmap(img1);
+    QPropertyAnimation *animation = new QPropertyAnimation(myAttackLabel, "pos");
+    animation->setDuration(2000);
+    animation->setEasingCurve(QEasingCurve::InQuad);
+    animation->setStartValue(QPoint(340,250));
+    animation->setEndValue(QPoint(870,250));
+    animation->start();
+    QString str;
+    if(pos == 0)
+    {
+        str = "进攻敌方本体";
+    }
+    else 
+    {
+        str = "进攻敌方" +QString::number(pos) +"号怪物";
+    }
+    ui->message->setText(str);
+    timer->start(2000);
+    messageTimer->start(1000);
 }
 void FightUI::my_defend()
 {
-
+    rebound = new QLabel;
+    rebound->setGeometry(rect().x()+340, rect().y()+250,
+                                    50, 100);
+    rebound->setParent(this);
+    QMovie *movie = new QMovie(":/Image/defend.gif");
+    rebound->setMovie(movie);
+    //设置图片的大小
+    movie->setScaledSize(QSize(50,100));
+    movie->start();
+    QString str = "防御敌方进攻";
+    ui->message->setText(str);
+    timer2->start(2000);
+    messageTimer->start(1000);
 }
 void FightUI::my_acc()//我方蓄气
 {
-
+    QString str = "我方蓄气";
+    ui->message->setText(str);
+    myMP += 10;
+    messageTimer->start(1000);
 }
 void FightUI::my_summon(int monsterNO)//怪兽编号为monsterNO
 {
-
+    QString str = "召唤第" + QString::number(monsterNO) +"号怪物" ;
+    ui->message->setText(str);
+    messageTimer->start(1000);
+    myMP -= sumConsume[monsterNO];
 }
 void FightUI::my_monster_dead(int pos)//pos位置上怪兽死亡
 {
-
+    QString str = "第" + QString::number(pos) +"号怪物死亡" ;
+    ui->message->setText(str);
+    messageTimer->start(1000);
 }
 void FightUI::my_skill(int pos, int skiNo)//pos位置上的skiNo号技能
 {
-
+    QString str = "使用" + QString::number(pos) +"号怪物的第" + QString::number(skiNo) +"号技能" ;
+    ui->message->setText(str);
+    messageTimer->start(1000);
 }
 void FightUI::my_surrender()
 {
-
+    QString str = "我方投降";
+    ui->message->setText(str);
+    messageTimer->start(1000);
 }
 void FightUI::my_win()
 {
-
+    QString str = "Victory";
+    ui->message->setText(str);
+    messageTimer->start(1000);
 }
 
 void FightUI::my_lose()
 {
-
+    QString str = "Defeat";
+    ui->message->setText(str);
+    messageTimer->start(1000);
 }
 void FightUI::update_my_HP(int mode, int pos, int value)//mode为1是+，0是-，pos为位置，value为变化的数值
 {
-
+    if(mode)
+    {
+        myMonBlood[pos] += value;
+    }
+    else {
+        myMonBlood[pos] -= value;
+    }
+    show_blood();
 }
 void FightUI::update_my_MP(int value)//value为变化的数值
 {
-
+    myMP -= value;
 }
 
 void FightUI::opp_attack(int pos)//攻击了对面pos位置
 {
-
+    eneAttackLabel = new QLabel(this);
+    eneAttackLabel->setVisible(true);
+    QPixmap img1,img2;
+    img1.load(":/Image/Fire_left.png");
+    eneAttackLabel->setPixmap(img1);
+    QPropertyAnimation *animation = new QPropertyAnimation(eneAttackLabel, "pos");
+    animation->setDuration(2000);
+    animation->setEasingCurve(QEasingCurve::InQuad);
+    animation->setStartValue(QPoint(870,250));
+    animation->setEndValue(QPoint(340,250));
+    animation->start();
+    QString str;
+    if(pos == 0)
+    {
+        str = "敌方进攻我方本体";
+    }
+    else
+    {
+        str = "敌方进攻我方" +QString::number(pos) +"号怪物";
+    }
+    ui->message->setText(str);
+    timer->start(2000);
+    messageTimer->start(1000);
 }
 
 void FightUI::opp_defend()
 {
-
+    rebound = new QLabel;
+    rebound->setGeometry(rect().x()+870, rect().y()+250,
+                                    50, 100);
+    rebound->setParent(this);
+    QMovie *movie = new QMovie(":/Image/defend.gif");
+    rebound->setMovie(movie);
+    //设置图片的大小
+    movie->setScaledSize(QSize(50,100));
+    movie->start();
+    QString str = "敌方防御我方进攻";
+    ui->message->setText(str);
+    timer2->start(1000);
+    messageTimer->start(1000);
 }
 
 void FightUI::opp_acc()
 {
-
+    QString str = "敌方蓄气";
+    ui->message->setText(str);
+    eneMP += 10;
+    messageTimer->start(1000);
 }
 void FightUI::opp_summon(int monsterNO)//怪兽编号为monsterNO
 {
-
+    QString str = "敌方召唤第" + QString::number(monsterNO) +"号怪物" ;
+    ui->message->setText(str);
+    messageTimer->start(1000);
+    eneMP -= sumConsume[monsterNO];
 }
 
 void FightUI::opp_monster_dead(int pos)//pos位置上怪兽死亡
 {
-
+    QString str = "敌方第" + QString::number(pos) +"号怪物死亡" ;
+    ui->message->setText(str);
+    messageTimer->start(1000);
 }
 
 void FightUI::opp_skill(int pos, int skiNo)//pos位置上的skiNo号技能
 {
-
+    QString str = "敌方使用" + QString::number(pos) +"号怪物的第" + QString::number(skiNo) +"号技能" ;
+    ui->message->setText(str);
+    messageTimer->start(1000);
 }
 
 void FightUI::opp_surrender()
 {
-
+    QString str = "敌方投降";
+    ui->message->setText(str);
+    messageTimer->start(1000);
 }
 void FightUI::update_opp_HP(int mode, int pos, int value)//mode为1是+，0是-，pos为位置，value为变化的数值
 {
-
+    if(mode)
+    {
+        eneMonBlood[pos] += value;
+    }
+    else {
+        eneMonBlood[pos] -= value;
+    }
+    show_blood();
 }
 void FightUI::update_opp_MP(int value)//value为变化的数值
 {
-
+    eneMP -= value;
 }
 
 void FightUI::serv_timeout()//服务器超时
 {
-
+    QString str = "服务器超时";
+    ui->message->setText(str);
+    messageTimer->start(1000);
 }
