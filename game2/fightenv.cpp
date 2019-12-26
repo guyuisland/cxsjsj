@@ -8,6 +8,8 @@ Fightenv::Fightenv(ClientSocket *client, QWidget *parent):
     ui(new Ui::Fightenv)
 {
     monsterFactory = new MonsterFactory;
+    for(int i = 0; i < MONSTER.size(); i++)
+        sum_times[MONSTER[i]] = monsterFactory->call_times_by_No(MONSTER[i]);
 }
 Fightenv::Fightenv(Player& m, Player& o)
 {
@@ -86,6 +88,7 @@ void Fightenv::summon_handle(int monsNo)
     sendInfo["object"] = monsNo;
     jsBuf = sendInfo;
     send_choice(sendInfo);
+    sum_times[monsNo] = sum_times[monsNo] - 1;
 }
 void Fightenv::skill_handle(int monsPos, int skiNo, int obj)
 {
@@ -120,11 +123,9 @@ void Fightenv::send_choice(json& sendInfo)
 
 
 void Fightenv::round_handle(){
-    qDebug() <<"here";
     json recvInfo = json::parse(strWatcherPtr->result());
     disconnect(strWatcherPtr, SIGNAL(finished()), this, SLOT(round_handle()));
     delete strWatcherPtr;
-    qDebug() <<"here1";
     cmp_excute(jsBuf,recvInfo);
     int res=game_over();
     if(res != 0)
@@ -1001,16 +1002,18 @@ void Fightenv::attack_attack(json& sendInfo, json& recvInfo){
 }
 void Fightenv::attack_accumulate(json& sendInfo, json& recvInfo){
     Player* att_player, *acc_player;
-    int obj = -1;
+    int obj = -1, side = -1;
     if(sendInfo["choice"].get<int>()==ATTACK){
         att_player = &me;
         acc_player = &opponent;
         obj= sendInfo["object"].get<int>();
+        side = 1;
     }
     else{
         att_player = &opponent;
         acc_player = &me;
         obj= recvInfo["object"].get<int>();
+        side = 0;
     }
 
     acc_player->inc_MP();
@@ -1039,6 +1042,19 @@ void Fightenv::attack_accumulate(json& sendInfo, json& recvInfo){
         }
         }
         //攻击反弹
+        if(side)
+        {
+            emit on_update_my_MP(1);
+            emit on_opp_rebound();
+            emit on_my_attack(obj);
+            emit on_update_my_HP(1, 1, 0);
+        }
+        else {
+            emit on_update_opp_MP(1);
+            emit on_my_rebound();
+            emit on_opp_attack(obj);
+            emit on_update_opp_HP(1, 1, 0);
+        }
         return;
     }
     switch (obj) {
@@ -1062,33 +1078,63 @@ void Fightenv::attack_accumulate(json& sendInfo, json& recvInfo){
         break;
     }
     }
-
     //画动画
+    if(side)
+    {
+        emit on_update_my_MP(1);
+        emit on_my_attack(obj);
+        emit on_opp_evade(1);
+    }
+    else {
+        emit on_update_opp_MP(1);
+        emit on_opp_attack(obj);
+        emit on_my_evade(1);
+    }
+
 }
 void Fightenv::attack_defend(json& sendInfo, json& recvInfo){
     Player* att_player, *def_player;
+    int side = -1, obj = -1;
     if(sendInfo["choice"].get<int>()==ATTACK){
         att_player = &me;
         def_player = &opponent;
+        obj = sendInfo["object"].get<int>();
+        side = 1;
     }
     else{
         att_player = &opponent;
         def_player = &me;
+        obj = recvInfo["object"].get<int>();
+        side = 0;
     }
 
     att_player->dec_MP(1);
 
     //画动画
+    if(side)
+    {
+        emit on_update_my_MP(1);
+        emit on_my_attack(obj);
+        emit on_opp_defend();
+    }
+    else {
+        emit on_update_opp_MP(1);
+        emit on_opp_attack(obj);
+        emit on_my_defend();
+    }
 }
 void Fightenv::attack_skill(json& sendInfo, json& recvInfo){
     Player* att_player, *ski_player;
+    int side = -1;
     if(sendInfo["choice"].get<int>()==ATTACK){
         att_player = &me;
         ski_player = &opponent;
+        side = 1;
     }
     else{
         att_player = &opponent;
         ski_player = &me;
+        side = 0;
     }
     att_player->dec_MP(1);
 
@@ -1104,6 +1150,14 @@ void Fightenv::attack_skill(json& sendInfo, json& recvInfo){
     }
     ski_player->dec_MP(ski.get_cost());
     int skiPos = sendInfo["object"].get<int>();
+
+
+
+
+
+
+
+
     switch (skiPos) {
     case ATTACK_1:{
         if(att_player->get_buff(REBOUND)){
@@ -1203,7 +1257,6 @@ void Fightenv::attack_skill(json& sendInfo, json& recvInfo){
         }
         }
         //攻击反弹
-
     }
     else{
         switch (attPos) {
@@ -1250,18 +1303,15 @@ void Fightenv::attack_surrender(json& sendInfo, json& recvInfo){
 
     sur_player->surrender();
 
-
 }
 
 void Fightenv::accumulate_accumulate(json& sendInfo, json& recvInfo){
     me.inc_MP();
     opponent.inc_MP();
-    qDebug() << "here2";
     emit on_my_acc();
     emit on_update_my_MP(1);
     emit on_opp_acc();
     emit on_update_opp_MP(1);
-
 }
 void Fightenv::accumulate_defend(json& sendInfo, json& recvInfo){
     Player* acc_player, *def_player;
@@ -1733,6 +1783,36 @@ void Fightenv::surrender_surrender(json& sendInfo, json& recvInfo){
 int Fightenv::has_obj(int monsterPos, int skiPos)
 {
     return  me.has_obj(monsterPos, skiPos);
+}
+
+int Fightenv::verify_option(int objSelect, int skiSelect, int eneMonsSelect)
+{
+    //1可以释放, 2MP不足， 3怪兽已满，4达到召唤上限次数,5非法操作(技能释放对象选择玩家本体)
+    //召唤，判断现有怪兽个数和召唤上限
+    if(objSelect == 0 && skiSelect == 3)
+    {
+        if(me.monster_num() == 3)
+            return 3;
+        else if(sum_times[eneMonsSelect] <= 0){
+            return 4;
+        }
+        else if(me.get_MP() < monsterFactory->mons_called_MP(eneMonsSelect)){//判断MP是否足够
+            return 2;
+        }
+        else {
+            return 1;
+        }
+    }
+    //技能，判断MP是否足够
+    int monsNo = -1;
+    std::vector<int> myMon(4, 0);
+    me.get_mon_No(myMon);
+    monsNo = myMon[objSelect];
+    if(me.get_MP() < monsterFactory->mons_skill_MP(monsNo, skiSelect))
+    {
+        return 2;
+    }
+    return 1;
 }
 
 void Fightenv::get_my_monster(vector<int>& myMon)

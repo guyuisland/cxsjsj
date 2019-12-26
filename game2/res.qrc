@@ -22,5 +22,8 @@
         <file>Image/back.png</file>
         <file>Image/rebound.gif</file>
         <file>Image/defend.gif</file>
+        <file>Image/attack.jpeg</file>
+        <file>Image/defend.jpeg</file>
+        <file>Image/store.jpg</file>
     </qresource>
 </RCC>

@@ -67,7 +67,7 @@ public slots:
 private slots:
     void hide_ski_anm();
     void on_pushButton_clicked();
-
+    void hide_message();
 
 
 private:
@@ -89,6 +89,7 @@ private:
     void renew_MP(vector<int>);
     void renew_my_blood(vector<int> ,vector<int>);
     void renew_enemy_blood(vector<int> ,vector<int>);
+    void renew_skill_photo(int);
 
     MyLabel *myLabel;
     QPixmap PixmapToRound(const QPixmap &src, int radius);
@@ -105,12 +106,14 @@ private:
     int eneMP = 100;
     int sumConsume[4] = {0,20,30,40};
     QString skillDes[4][4] = { {"防御","攻击","蓄积能量","召唤"}};
+    int skillType[5][4] = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,1,1,1}};//记录怪物的技能类型,0-3是四种怪物的，4是自己的技能
     int EnemySummonSeq[4] = {-1,-1,-1,-1};//敌人召唤某个位置是什么怪物
     bool myObjectExist[4] = {1,0,0,0};//怪物是否已经被召唤
     bool eneObjectExist[4] = {1,0,0,0};//怪物是否已经被召唤
     bool SummonExist[4] = {1,0,0,0};//使用召唤技能时显示
     string PhotoAdd[4] = {":/Image/charizard_left.gif",":/Image/dodrio_left.gif",":/Image/lapras_left.gif",":/Image/talonflame_left.gif"};
     string EnePhotoAdd[4] = {":/Image/charizard.gif",":/Image/dodrio.gif",":/Image/lapras.gif",":/Image/talonflame.gif"};
+    string skillPhotoAdd[3] = {":/Image/attack.jpeg",":/Image/store.jpg",":/Image/defend.jpeg"};
     void use_skill();
     void attack();
 

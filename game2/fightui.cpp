@@ -1,7 +1,6 @@
 ﻿#include "fightui.h"
 #include "ui_fightui.h"
 #include<QMovie>
-#include<QDebug>
 #include<QPainter>
 #include<QPixmap> 
 #include<QMessageBox>
@@ -18,8 +17,10 @@ FightUI::FightUI(ClientSocket *client, QWidget *parent) :
     InitUi();
     timer = new QTimer;
     timer2 = new QTimer;
+    messageTimer = new QTimer;
     connect(timer, SIGNAL(timeout()), this, SLOT(hide_ski_anm()));
     connect(timer2, SIGNAL(timeout()), this, SLOT(hide_ski_anm()));
+    connect(messageTimer, SIGNAL(timeout()), this, SLOT(hide_message()));
     fightEnv = new Fightenv(_client);
 
     init_connect();
@@ -127,6 +128,32 @@ void FightUI::show_blood(vector<int> myMonster,vector<int> oppMonster,vector<int
             myptr[i]->setVisible(false);
         }
     }
+}
+void FightUI::renew_skill_photo(int pos)
+{
+    QLabel *skiList[4] = {ui->skill0,ui->skill1,ui->skill2,ui->skill3};
+    QPixmap img;
+    vector<int> myMonster;
+    fightEnv->get_my_monster(myMonster);
+    int monster = myMonster[pos];
+    if(monster == -1)
+    {
+        for (int i=0 ;i<4;i++)
+        {
+            int type = skillType[4][i];
+            img.load(skillPhotoAdd[type].c_str());
+            skiList[i]->setPixmap(img);
+        }
+    }
+    else {
+        for (int i=0 ;i<4;i++)
+        {
+            int type = skillType[monster][i];
+            img.load(skillPhotoAdd[type].c_str());
+            skiList[i]->setPixmap(img);
+        }
+    }
+
 }
 void FightUI::attack()
 {
@@ -338,36 +365,37 @@ void FightUI::InitUi()
 
 void FightUI::init_connect()
 {
-    connect(fightEnv, SIGNAL(fightEnv->on_my_attack(int)), this, SLOT(my_attack(int)));
-    connect(fightEnv, SIGNAL(fightEnv->on_my_defend()), this, SLOT(my_defend()));
-    connect(fightEnv, SIGNAL(fightEnv->on_my_acc()), this, SLOT(my_acc()));
-    connect(fightEnv, SIGNAL(fightEnv->on_my_summon(int)), this, SLOT(my_summon(int)));
-    connect(fightEnv, SIGNAL(fightEnv->on_my_surrender()), this, SLOT(my_surrender()));
-    connect(fightEnv, SIGNAL(fightEnv->on_my_win()), this, SLOT(my_win()));
-    connect(fightEnv, SIGNAL(fightEnv->on_my_lose()), this, SLOT(my_lose()));
-    connect(fightEnv, SIGNAL(fightEnv->on_my_monster_dead(int)), this, SLOT(my_monster_dead(int)));
-    connect(fightEnv, SIGNAL(fightEnv->on_my_skill(int, int)), this, SLOT(my_skill(int, int)));
-    connect(fightEnv, SIGNAL(fightEnv->on_my_rebound()), this, SLOT(my_rebound()));
-    connect(fightEnv, SIGNAL(fightEnv->on_my_evade(int)), this, SLOT(my_evade(int)));
-    connect(fightEnv, SIGNAL(fightEnv->on_my_heal(int)), this, SLOT(my_heal(int)));
-    connect(fightEnv, SIGNAL(fightEnv->on_update_my_HP(int,int,int)), this, SLOT(update_my_HP(int,int,int)));
-    connect(fightEnv, SIGNAL(fightEnv->on_update_my_MP(int)), this, SLOT(update_my_MP(int)));
+    connect(fightEnv, SIGNAL(on_my_attack(int)), this, SLOT(my_attack(int)));
+    connect(fightEnv, SIGNAL(on_my_defend()), this, SLOT(my_defend()));
+    connect(fightEnv, SIGNAL(on_my_acc()), this, SLOT(my_acc()));
+    connect(fightEnv, SIGNAL(on_my_summon(int)), this, SLOT(my_summon(int)));
+    connect(fightEnv, SIGNAL(on_my_surrender()), this, SLOT(my_surrender()));
+    connect(fightEnv, SIGNAL(on_my_win()), this, SLOT(my_win()));
+    connect(fightEnv, SIGNAL(on_my_lose()), this, SLOT(my_lose()));
+    connect(fightEnv, SIGNAL(on_my_monster_dead(int)), this, SLOT(my_monster_dead(int)));
+    connect(fightEnv, SIGNAL(on_my_skill(int, int)), this, SLOT(my_skill(int, int)));
+    connect(fightEnv, SIGNAL(on_my_rebound()), this, SLOT(my_rebound()));
+    connect(fightEnv, SIGNAL(on_my_evade(int)), this, SLOT(my_evade(int)));
+    connect(fightEnv, SIGNAL(on_my_heal(int)), this, SLOT(my_heal(int)));
+    connect(fightEnv, SIGNAL(on_update_my_HP(int,int,int)), this, SLOT(update_my_HP(int,int,int)));
+    connect(fightEnv, SIGNAL(on_update_my_MP(int)), this, SLOT(update_my_MP(int)));
 
 
-    connect(fightEnv, SIGNAL(fightEnv->on_opp_attack(int)), this, SLOT(opp_attack(int)));
-    connect(fightEnv, SIGNAL(fightEnv->on_opp_defend()), this, SLOT(opp_defend()));
-    connect(fightEnv, SIGNAL(fightEnv->on_opp_acc()), this, SLOT(opp_acc()));
-    connect(fightEnv, SIGNAL(fightEnv->on_opp_summon(int)), this, SLOT(opp_summon(int)));
-    connect(fightEnv, SIGNAL(fightEnv->on_opp_surrender()), this, SLOT(opp_surrender()));
-    connect(fightEnv, SIGNAL(fightEnv->on_opp_monster_dead(int)), this, SLOT(opp_monster_dead(int)));
-    connect(fightEnv, SIGNAL(fightEnv->on_opp_skill(int,int)), this, SLOT(on_opp_skill(int,int)));
-    connect(fightEnv, SIGNAL(fightEnv->on_opp_rebound()), this, SLOT(opp_rebound()));
-    connect(fightEnv, SIGNAL(fightEnv->on_opp_evade(int)), this, SLOT(opp_evade(int)));
-    connect(fightEnv, SIGNAL(fightEnv->on_opp_heal(int)), this, SLOT(opp_heal(int)));
-    connect(fightEnv, SIGNAL(fightEnv->on_update_opp_HP(int,int,int)), this, SLOT(update_opp_HP(int,int,int)));
-    connect(fightEnv, SIGNAL(fightEnv->on_update_opp_MP(int)), this, SLOT(update_opp_MP(int)));
+    connect(fightEnv, SIGNAL(on_opp_attack(int)), this, SLOT(opp_attack(int)));
+    connect(fightEnv, SIGNAL(on_opp_defend()), this, SLOT(opp_defend()));
+    connect(fightEnv, SIGNAL(on_opp_acc()), this, SLOT(opp_acc()));
+    connect(fightEnv, SIGNAL(on_opp_summon(int)), this, SLOT(opp_summon(int)));
+    connect(fightEnv, SIGNAL(on_opp_surrender()), this, SLOT(opp_surrender()));
+    connect(fightEnv, SIGNAL(on_opp_monster_dead(int)), this, SLOT(opp_monster_dead(int)));
+    connect(fightEnv, SIGNAL(on_opp_skill(int,int)), this, SLOT(on_opp_skill(int,int)));
+    connect(fightEnv, SIGNAL(on_opp_rebound()), this, SLOT(opp_rebound()));
+    connect(fightEnv, SIGNAL(on_opp_evade(int)), this, SLOT(opp_evade(int)));
+    connect(fightEnv, SIGNAL(on_opp_heal(int)), this, SLOT(opp_heal(int)));
+    connect(fightEnv, SIGNAL(on_update_opp_HP(int,int,int)), this, SLOT(update_opp_HP(int,int,int)));
+    connect(fightEnv, SIGNAL(on_update_opp_MP(int)), this, SLOT(update_opp_MP(int)));
 
-    connect(fightEnv, SIGNAL(fightEnv->on_server_timeout()), this, SLOT(server_timeout()));
+    connect(fightEnv, SIGNAL(on_server_timeout()), this, SLOT(server_timeout()));
+
 }
 void FightUI::summon_monster(int n)
 {
@@ -483,6 +511,7 @@ bool FightUI::eventFilter(QObject *obj, QEvent *event)
                  if(myObjectExist[0])
                  {
                      ObjectSelect = 0;
+                     renew_skill_photo(0);
                      skill_des(0);
                      return true;
                  }
@@ -507,6 +536,7 @@ bool FightUI::eventFilter(QObject *obj, QEvent *event)
              {
                  if(myObjectExist[1])
                  {
+                    renew_skill_photo(1);
                     ObjectSelect = 1;
                     skill_des(1);
                     return true;
@@ -532,6 +562,7 @@ bool FightUI::eventFilter(QObject *obj, QEvent *event)
              {
                  if(myObjectExist[2])
                  {
+                     renew_skill_photo(2);
                      ObjectSelect = 2;
                      skill_des(2);
                      return true;
@@ -557,6 +588,7 @@ bool FightUI::eventFilter(QObject *obj, QEvent *event)
              {
                  if(myObjectExist[3])
                  {
+                     renew_skill_photo(3);
                      ObjectSelect = 3;
                      skill_des(3);
                      return true;
@@ -896,14 +928,23 @@ int FightUI::have_object()
 
 void FightUI::on_pushButton_clicked()
 {
+
     if(ObjectSelect == -1)
     {
         //提示选择obj
+        QMessageBox msg(this);
+        msg.setWindowTitle("Invitation");
+        msg.setText("没有选中对象");
+        msg.setStandardButtons(QMessageBox::Ok);
     }
     else{
         if(SkillSelect == -1)
         {
             //提示选择skill
+            QMessageBox msg(this);
+            msg.setWindowTitle("error");
+            msg.setText("请选择你的选项");
+            msg.setStandardButtons(QMessageBox::Ok);
         }
         else{
             if(have_object() == 1)
@@ -912,10 +953,62 @@ void FightUI::on_pushButton_clicked()
                 {
                     //提示选择enemonster
                     //当skill为召唤时，enemonster为monster的编号
+                    if(ObjectSelect == 0 && SkillSelect == 3)
+                    {
+                        QMessageBox msg(this);
+                        msg.setWindowTitle("error");
+                        msg.setText("请选择你要召唤的怪兽");
+                        msg.setStandardButtons(QMessageBox::Ok);
+                    }
+                    else{
+                        QMessageBox msg(this);
+                        msg.setWindowTitle("error");
+                        msg.setText("请选择对方的怪兽");
+                        msg.setStandardButtons(QMessageBox::Ok);
+                    }
                 }
                 else {
-                    //检测通过，发送
-                    fightEnv->dispatch(ObjectSelect, SkillSelect, eneMonSelect);
+                    //查看能否释放该技能
+                    switch (fightEnv->verify_option(ObjectSelect, SkillSelect, eneMonSelect)) {
+                        case 1:{
+                            //检测通过，发送
+                            fightEnv->dispatch(ObjectSelect, SkillSelect, eneMonSelect);
+                            break;
+                        }
+                        case 2:{
+                            //MP不足
+                            QMessageBox msg(this);
+                            msg.setWindowTitle("error");
+                            msg.setText("MP不足");
+                            msg.setStandardButtons(QMessageBox::Ok);
+                            break;
+                        }
+                        case 3:{
+                            //怪兽已满
+                            QMessageBox msg(this);
+                            msg.setWindowTitle("error");
+                            msg.setText("怪兽槽已满");
+                            msg.setStandardButtons(QMessageBox::Ok);
+                            break;
+                        }
+                        case 4:{
+                            //达到召唤上限
+                            QMessageBox msg(this);
+                            msg.setWindowTitle("error");
+                            msg.setText("该怪兽已达到召唤上限");
+                            msg.setStandardButtons(QMessageBox::Ok);
+                            break;
+                        }
+                        case 5:{
+                            //技能释放对象选择玩家本体
+                            QMessageBox msg(this);
+                            msg.setWindowTitle("error");
+                            msg.setText("技能不能用于玩家本体");
+                            msg.setStandardButtons(QMessageBox::Ok);
+                            break;
+                        }
+                    }
+
                 }
             }
             else if(have_object() == ATTACK_A){
@@ -955,6 +1048,7 @@ void FightUI::my_attack(int pos)//攻击了对面pos位置
     {
         str = "进攻敌方" +QString::number(pos) +"号怪物";
     }
+    ui->message->setVisible(true);
     ui->message->setText(str);
     timer->start(2000);
     messageTimer->start(1000);
@@ -971,6 +1065,7 @@ void FightUI::my_defend()
     movie->setScaledSize(QSize(50,100));
     movie->start();
     QString str = "防御敌方进攻";
+    ui->message->setVisible(true);
     ui->message->setText(str);
     timer2->start(2000);
     messageTimer->start(1000);
@@ -978,17 +1073,19 @@ void FightUI::my_defend()
 void FightUI::my_acc()//我方蓄气
 {
     QString str = "我方蓄气";
+    ui->message->setVisible(true);
     ui->message->setText(str);
-    qDebug() << "here3";
     myMP += 10;
     messageTimer->start(1000);
     vector<int> MP;
     fightEnv->get_MP(MP);
-    ui->enemyMP->setValue(MP[0]);
+    ui->myMP->setValue(MP[0]);
+
 }
 void FightUI::my_summon(int monsterNO)//怪兽编号为monsterNO
 {
     QString str = "召唤第" + QString::number(monsterNO) +"号怪物" ;
+    ui->message->setVisible(true);
     ui->message->setText(str);
     messageTimer->start(1000);
     myMP -= sumConsume[monsterNO];
@@ -1001,6 +1098,7 @@ void FightUI::my_summon(int monsterNO)//怪兽编号为monsterNO
 void FightUI::my_monster_dead(int pos)//pos位置上怪兽死亡
 {
     QString str = "第" + QString::number(pos) +"号怪物死亡" ;
+    ui->message->setVisible(true);
     ui->message->setText(str);
     messageTimer->start(1000);
 
@@ -1013,18 +1111,21 @@ void FightUI::my_monster_dead(int pos)//pos位置上怪兽死亡
 void FightUI::my_skill(int pos, int skiNo)//pos位置上的skiNo号技能
 {
     QString str = "使用" + QString::number(pos) +"号怪物的第" + QString::number(skiNo) +"号技能" ;
+    ui->message->setVisible(true);
     ui->message->setText(str);
     messageTimer->start(1000);
 }
 void FightUI::my_surrender()
 {
     QString str = "我方投降";
+    ui->message->setVisible(true);
     ui->message->setText(str);
     messageTimer->start(1000);
 }
 void FightUI::my_win()
 {
     QString str = "Victory";
+    ui->message->setVisible(true);
     ui->message->setText(str);
     messageTimer->start(1000);
 }
@@ -1032,6 +1133,7 @@ void FightUI::my_win()
 void FightUI::my_lose()
 {
     QString str = "Defeat";
+    ui->message->setVisible(true);
     ui->message->setText(str);
     messageTimer->start(1000);
 }
@@ -1048,6 +1150,7 @@ void FightUI::my_rebound()
     movie->setScaledSize(QSize(50,100));
     movie->start();
     QString str = "反弹敌方进攻";
+    ui->message->setVisible(true);
     ui->message->setText(str);
     timer2->start(2000);
     messageTimer->start(1000);
@@ -1100,7 +1203,8 @@ void FightUI::opp_attack(int pos)//攻击了对面pos位置
     {
         str = "敌方进攻我方" +QString::number(pos) +"号怪物";
     }
-    ui->message->setText(str);
+    ui->message_2->setVisible(true);
+    ui->message_2->setText(str);
     timer->start(2000);
     messageTimer->start(1000);
 
@@ -1125,7 +1229,8 @@ void FightUI::opp_defend()
     movie->setScaledSize(QSize(50,100));
     movie->start();
     QString str = "敌方防御我方进攻";
-    ui->message->setText(str);
+    ui->message_2->setVisible(true);
+    ui->message_2->setText(str);
     timer2->start(1000);
     messageTimer->start(1000);
 }
@@ -1133,7 +1238,8 @@ void FightUI::opp_defend()
 void FightUI::opp_acc()
 {
     QString str = "敌方蓄气";
-    ui->message->setText(str);
+    ui->message_2->setVisible(true);
+    ui->message_2->setText(str);
     eneMP += 10;
     messageTimer->start(1000);
     vector<int> MP;
@@ -1145,7 +1251,8 @@ void FightUI::opp_summon(int monsterNO)//怪兽编号为monsterNO
     int pos;
     QString str = "敌方在位置"+QString::number(pos)+ "召唤第" + QString::number(monsterNO) +"号怪物" ;
     enemonsterNum++;
-    ui->message->setText(str);
+    ui->message_2->setVisible(true);
+    ui->message_2->setText(str);
     messageTimer->start(1000);
     eneMP -= sumConsume[monsterNO];
 
@@ -1161,7 +1268,8 @@ void FightUI::opp_monster_dead(int pos)//pos位置上怪兽死亡
     eneObjectExist[pos] = 0;
     EnemySummonSeq[pos] = -1;
     QString str = "敌方第" + QString::number(pos) +"号怪物死亡" ;
-    ui->message->setText(str);
+    ui->message_2->setVisible(true);
+    ui->message_2->setText(str);
     messageTimer->start(1000);
 
     vector<int> eneMonster,eneblood;
@@ -1173,14 +1281,16 @@ void FightUI::opp_monster_dead(int pos)//pos位置上怪兽死亡
 void FightUI::opp_skill(int pos, int skiNo)//pos位置上的skiNo号技能
 {
     QString str = "敌方使用" + QString::number(pos) +"号怪物的第" + QString::number(skiNo) +"号技能" ;
-    ui->message->setText(str);
+    ui->message_2->setVisible(true);
+    ui->message_2->setText(str);
     messageTimer->start(1000);
 }
 
 void FightUI::opp_surrender()
 {
     QString str = "敌方投降";
-    ui->message->setText(str);
+    ui->message_2->setVisible(true);
+    ui->message_2->setText(str);
     messageTimer->start(1000);
 }
 
@@ -1196,7 +1306,8 @@ void FightUI::opp_rebound()
     movie->setScaledSize(QSize(50,100));
     movie->start();
     QString str = "敌方反弹我方进攻";
-    ui->message->setText(str);
+    ui->message_2->setVisible(true);
+    ui->message_2->setText(str);
     timer2->start(1000);
     messageTimer->start(1000);
 }
@@ -1228,6 +1339,7 @@ void FightUI::update_opp_MP(int value)//value为变化的数值
 void FightUI::serv_timeout()//服务器超时
 {
     QString str = "服务器超时";
+    ui->message->setVisible(true);
     ui->message->setText(str);
     messageTimer->start(1000);
 }
@@ -1245,3 +1357,8 @@ void FightUI::serv_timeout()//服务器超时
     show_blood(myMonster,eneMonster,myblood,eneblood);
 
 }*/
+
+void FightUI::hide_message()
+{
+    //ui->message->setVisible(false);
+}

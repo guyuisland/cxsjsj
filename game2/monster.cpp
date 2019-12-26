@@ -34,6 +34,16 @@ int Monster::get_cost(){
 int Monster::get_HP(){
     return cur_HP;
 }
+
+int Monster::get_times()
+{
+    return callTimes;
+}
+
+int Monster::get_MP_cost(int skiNo)
+{
+    return skills[skiNo].get_cost();
+}
 int Monster::has_obj(int skiPos){
     if(skills[skiPos].get_damage() > 0)
     {
@@ -54,13 +64,14 @@ Mage::Mage()
     energyCost = 5;
     callTimes = 2;
     name = "Mage";
-
+    No = MAGE;
     skills.emplace_back(Skill(2,std::make_pair(false,0),std::make_pair(false,0),"thunder","kill a monster of opponent",false,false,false,false,false,false,100,0));
     skills.emplace_back(Skill(6,std::make_pair(false,0),std::make_pair(false,0),"fire","penetrate dec two damage for every monster",true,false,true,false,false,false,2,0));
     skills.emplace_back(Skill(4,std::make_pair(false,0),std::make_pair(false,0),"heal","治疗自己4点血",false,false,false,false,false,false,0,3));
 }
 Mage::~Mage()
 {
+    delete this;
 }
 Skill Mage::skill1()
 {
@@ -110,13 +121,14 @@ Pegasus::Pegasus()
     energyCost = 4;
     callTimes = 2;
     name = "Pegasus";
-
+    No = PEGASUS;
     skills.emplace_back(Skill(2,std::make_pair(true,1),std::make_pair(false,0),"疾风步","躲避当前攻击，并且下次攻击翻倍",false,false,false,true,false,false,0,0));
     skills.emplace_back(Skill(1,std::make_pair(false,0),std::make_pair(false,0),"钢闪刃","造成2点伤害",false,true,false,false,false,false,2,0));
     skills.emplace_back(Skill(4,std::make_pair(false,0),std::make_pair(false,0),"剑刃风暴","对所有怪兽造成3点伤害",true,false,false,false,false,false,3,0));
 }
 Pegasus::~Pegasus()
 {
+    delete this;
 }
 Skill Pegasus::skill1()
 {
@@ -138,13 +150,14 @@ Scorpicore::Scorpicore()
     energyCost = 2;
     callTimes = 3;
     name = "Scorpicore";
-
+    No = SCORPICORE;
     skills.emplace_back(Skill(3,std::make_pair(false,0),std::make_pair(true,2),"反弹","可在接下来两回合内反弹对手的攻击",false,false,false,false,false,false,0,0));
     skills.emplace_back(Skill(2,std::make_pair(false,0),std::make_pair(false,0),"撕咬","造成3点伤害，恢复自身1点血量",false,false,false,false,false,false,3,1));
     skills.emplace_back(Skill(3,std::make_pair(false,0),std::make_pair(false,0),"淬毒","对敌人所有怪物造成1点伤害",true,false,false,false,false,false,1,0));
 }
 Scorpicore::~Scorpicore()
 {
+    delete this;
 }
 Skill Scorpicore::skill1()
 {
@@ -194,13 +207,14 @@ Knight::Knight()
     energyCost = 1;
     callTimes = 3;
     name = "Knight";
-
+    No = KNIGHT;
     skills.emplace_back(Skill(7,std::make_pair(false,0),std::make_pair(false,0),"血暮","击杀对手所有怪兽",true,false,false,false,false,false,100,0));
     skills.emplace_back(Skill(2,std::make_pair(false,0),std::make_pair(false,0),"怖刃","造成1点伤害，加一点能量",false,false,false,false,true,false,1,0));//加能量
     skills.emplace_back(Skill(8,std::make_pair(false,0),std::make_pair(false,0),"暗瞳","穿透伤害",false,true,true,false,false,false,3,0));
 }
 Knight::~Knight()
 {
+    delete this;
 }
 Skill Knight::skill1()
 {

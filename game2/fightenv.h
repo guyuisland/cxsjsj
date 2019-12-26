@@ -8,6 +8,7 @@
 #include"player.h"
 #include"monsterfactory.h"
 #include "clientsocket.h"
+#include <unordered_map>
 
 namespace Ui {
 class Fightenv;
@@ -43,6 +44,7 @@ public:
     void surrender_handle();
 
     int has_obj(int , int);
+    int verify_option(int , int , int);
 
     //根据UI获得选择转到相应处理逻辑
     void dispatch(int , int , int );
@@ -127,6 +129,7 @@ private:
     Player opponent;
     int round;//当前回合数
     MonsterFactory* monsterFactory;
+    std::unordered_map<int, int> sum_times;
     ClientSocket *_client;
     QFutureWatcher<std::string> *strWatcherPtr;
     json jsBuf;

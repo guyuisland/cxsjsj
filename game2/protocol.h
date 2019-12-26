@@ -1,5 +1,6 @@
 ﻿#ifndef PROTOCOL_H
 #define PROTOCOL_H
+#include<vector>
 
 /*--------------------请求类型------------------------*/
 #define LOG_IN              2       // 登陆请求
@@ -67,5 +68,6 @@
 #define PHOENIX        104
 #define KNIGHT        105
 
+const std::vector<int> MONSTER = {MAGE, SPRITE, PEGASUS, SCORPICORE, PHOENIX, KNIGHT};
 
 #endif // PROTOCOL_H

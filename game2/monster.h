@@ -11,10 +11,13 @@
 class Monster
 {
 public:
+
     std::string get_name();
     int get_No();
     int get_cost();
     int get_HP();
+    int get_times();
+    int get_MP_cost(int );
     bool dec_HP(int num);
     void add_HP(int num);
     int has_obj(int);
