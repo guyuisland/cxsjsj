@@ -20,29 +20,21 @@ MonsterFactory::~MonsterFactory()
 
 Monster* MonsterFactory::create_monster(int type)
 {
-    if(type == MAGE){
-        Monster* mage = new Mage();
-        return mage;
+    if(type == FLAREON){
+        Monster* flareon = new Flareon();
+        return flareon;
     }
-    /*if(type == SPRITE){
-        Monster* sprite = new Sprite();
-        return sprite;
-    }*/
-    if(type== PEGASUS){
-        Monster* pegasus = new Pegasus();
-        return pegasus;
+    if(type == PIKACHU){
+        Monster* pikachu = new Pikachu();
+        return pikachu;
     }
-    if(type == SCORPICORE){
-        Monster* scorpicore = new Scorpicore();
-        return scorpicore;
+    if(type == GRENINJA){
+        Monster* greninja = new Greninja();
+        return greninja;
     }
-    /*if(type == PHOENIX){
-        Monster* phoenix = new Phoenix();
-        return phoenix;
-    }*/
-    if(type == KNIGHT){
-        Monster* knight = new Knight();
-        return knight;
+    if(type == DRAGONITE){
+        Monster* dragonite = new Dragonite();
+        return dragonite;
     }
 }
 
@@ -59,4 +51,9 @@ int MonsterFactory::mons_called_MP(int monNo)
 int MonsterFactory::mons_skill_MP(int monNo, int skiNo)
 {
     return monsBook[monNo]->get_MP_cost(skiNo);
+}
+
+int MonsterFactory::mon_maxHP(int monNo)
+{
+    return monsBook[monNo]->get_MaxHP();
 }

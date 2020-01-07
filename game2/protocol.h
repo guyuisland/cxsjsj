@@ -61,13 +61,13 @@
 #define RESULT      70       // 返回结果
 
 /*--------------------怪物类型编号------------------------*/
-#define MAGE        100
-#define SPRITE        101
-#define PEGASUS        102
-#define SCORPICORE        103
-#define PHOENIX        104
-#define KNIGHT        105
+#define FLAREON        100
+#define PIKACHU        101
+#define GRENINJA     102
+#define DRAGONITE         103
 
-const std::vector<int> MONSTER = {MAGE, SPRITE, PEGASUS, SCORPICORE, PHOENIX, KNIGHT};
+const std::vector<int> MONSTER = {FLAREON, PIKACHU, GRENINJA, DRAGONITE};
+
+
 
 #endif // PROTOCOL_H

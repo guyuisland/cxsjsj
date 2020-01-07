@@ -19,24 +19,23 @@ GameLobby::GameLobby(ClientSocket *client, json & recvInfo, FightUI *fightui, QW
     ui(new Ui::GameLobby)
 {
     ui->setupUi(this);
-    //设置图标
-    //setWindowIcon(QIcon(":/Image/ball.png"));
-    //设置标题
+
     setWindowTitle("游戏大厅");
     SetUserList();
     InitUi();
     QFont ft("Microsoft YaHei", 10);
     //ft.setPointSize(11);
     ui->name->setFont(ft);
-    QPalette pa;
-    pa.setColor(QPalette::WindowText,QColor("#ff4757"));
-    ui->name->setPalette(pa);
-
+    ui->level->setFont(ft);
+    //QPalette pa;
+//    pa.setColor(QPalette::WindowText,QColor("#ff4757"));
+//    ui->name->setPalette(pa);
     //刷新用户名、waiting列表
     myName = QString::fromStdString(recvInfo["myName"].get<string>());
     myLv = recvInfo["myLv"].get<int>();
     QString str = "Username: " + myName;
-    ui->level->setText("Lv:" + QString(myLv));
+    ui->name->setText(str);
+    ui->level->setText("Lv:" + QString::number(myLv));
 
     wList = recvInfo["wList"].get<std::vector<std::string>>();
     int size = wList.size(), i = 0;
@@ -71,7 +70,7 @@ void GameLobby::SetUserList()
 //    pal.setBrush(QPalette::Background,QBrush(QPixmap("H:/QT/game2/Image/user.png")));
 //    setPalette(pal);
     QPixmap img1;
-    img1.load(":/Image/user.png");
+    img1.load(":/Image/gamelobby.jpg");
     QPixmap pixMap= img1.scaled(1280,720, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
     ui->background->setPixmap(pixMap);
 
@@ -82,7 +81,7 @@ void GameLobby::SetUserList()
     ui->User2->setFont(ft);
     //设置颜色
     QPalette pa;
-    pa.setColor(QPalette::WindowText,QColor("#ff4757"));
+    pa.setColor(QPalette::WindowText,QColor("#000000"));
     ui->User1->setPalette(pa);
 
     QString str = QString::fromWCharArray(L"  USERNAME");
@@ -92,6 +91,8 @@ void GameLobby::SetUserList()
     ui->User2->setPalette(pa);
     QString str2 = QString::fromWCharArray(L"  USERNAME");
     ui->User2->setText(str);
+    //ui->rankButton->setStyleSheet("QPushButton{font-size:10px;color:yellow;border-style:solid;border-width:1px;border-color:black;border-radius:150px;}");
+
 
 
 }
@@ -197,8 +198,8 @@ void GameLobby::invite_handle()
     delete strWatcherPtr;
     if(recvInfo["define"].get<int>() == INVITE)
     {
-        //qDebug() <<"here3";
         QString oppName = QString::fromStdString(recvInfo["myName"].get<std::string>());
+        invitedName = oppName;
         QMessageBox msg(this);
         msg.setWindowTitle("Invitation");
         msg.setText("Player " + oppName + " is inviting you to play!");
@@ -223,6 +224,10 @@ void GameLobby::invite_handle()
         QFuture<std::string> ret = QtConcurrent::run(_client, p, sendInfo.dump());
         connect(strWatcherPtr, SIGNAL(finished()), this, SLOT(send_handle()));
         strWatcherPtr->setFuture(ret);
+    }
+    else if(recvInfo["define"].get<int>() == WAIT_TIMEOUT)
+    {
+        emit clicked(0);
     }
 
 }

@@ -12,6 +12,7 @@ public:
     int call_times_by_No(int );
     int mons_called_MP(int );
     int mons_skill_MP(int , int);
+    int mon_maxHP(int);
     Monster* create_monster(int);
 
     std::unordered_map<int, Monster*> monsBook;

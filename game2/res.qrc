@@ -25,5 +25,23 @@
         <file>Image/attack.jpeg</file>
         <file>Image/defend.jpeg</file>
         <file>Image/store.jpg</file>
+        <file>Image/summon.jpg</file>
+        <file>Image/heal.jpg</file>
+        <file>Image/dragonite.gif</file>
+        <file>Image/flareon.gif</file>
+        <file>Image/greninja.gif</file>
+        <file>Image/pikachu.gif</file>
+        <file>Image/dragonite_left.gif</file>
+        <file>Image/flareon_left.gif</file>
+        <file>Image/greninja_left.gif</file>
+        <file>Image/pikachu_left.gif</file>
+        <file>Image/Fire.png</file>
+        <file>Image/defend_right.gif</file>
+        <file>Image/rebound_right.gif</file>
+        <file>Image/gamelobby.jpg</file>
+        <file>Image/win.png</file>
+        <file>Image/lose.jpg</file>
+        <file>Image/Grass.png</file>
+        <file>Image/Grass_left.png</file>
     </qresource>
 </RCC>

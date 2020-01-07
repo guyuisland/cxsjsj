@@ -159,6 +159,18 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="minimumSize">
+       <size>
+        <width>132</width>
+        <height>119</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>132</width>
+        <height>119</height>
+       </size>
+      </property>
       <property name="frameShape">
        <enum>QFrame::Box</enum>
       </property>
@@ -167,11 +179,26 @@
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="skill1">
+      <property name="minimumSize">
+       <size>
+        <width>132</width>
+        <height>119</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>132</width>
+        <height>119</height>
+       </size>
+      </property>
       <property name="frameShape">
        <enum>QFrame::Box</enum>
       </property>
@@ -180,11 +207,26 @@
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="skill2">
+      <property name="minimumSize">
+       <size>
+        <width>132</width>
+        <height>119</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>132</width>
+        <height>119</height>
+       </size>
+      </property>
       <property name="frameShape">
        <enum>QFrame::Box</enum>
       </property>
@@ -193,11 +235,26 @@
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
     <item>
      <widget class="QLabel" name="skill3">
+      <property name="minimumSize">
+       <size>
+        <width>132</width>
+        <height>119</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>132</width>
+        <height>119</height>
+       </size>
+      </property>
       <property name="frameShape">
        <enum>QFrame::Box</enum>
       </property>
@@ -206,6 +263,9 @@
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -532,6 +592,12 @@
      <height>40</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Consolas</family>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
    <property name="frameShape">
     <enum>QFrame::NoFrame</enum>
    </property>
@@ -547,6 +613,12 @@
      <width>231</width>
      <height>40</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>Consolas</family>
+     <pointsize>12</pointsize>
+    </font>
    </property>
    <property name="frameShape">
     <enum>QFrame::NoFrame</enum>
@@ -622,8 +694,8 @@
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>560</x>
-     <y>510</y>
+     <x>580</x>
+     <y>480</y>
      <width>93</width>
      <height>28</height>
     </rect>
@@ -664,6 +736,119 @@
     <string/>
    </property>
   </widget>
+  <widget class="QLabel" name="skiDes0">
+   <property name="geometry">
+    <rect>
+     <x>351</x>
+     <y>530</y>
+     <width>132</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="skiDes1">
+   <property name="geometry">
+    <rect>
+     <x>490</x>
+     <y>530</y>
+     <width>132</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="skiDes2">
+   <property name="geometry">
+    <rect>
+     <x>629</x>
+     <y>530</y>
+     <width>132</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="skiDes3">
+   <property name="geometry">
+    <rect>
+     <x>768</x>
+     <y>530</y>
+     <width>132</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="enemyAttcakLabel">
+   <property name="geometry">
+    <rect>
+     <x>830</x>
+     <y>250</y>
+     <width>70</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
   <zorder>BackGround</zorder>
   <zorder>my_monster2</zorder>
   <zorder>SummonLabel</zorder>
@@ -693,6 +878,11 @@
   <zorder>pushButton</zorder>
   <zorder>message</zorder>
   <zorder>message_2</zorder>
+  <zorder>skiDes0</zorder>
+  <zorder>skiDes1</zorder>
+  <zorder>skiDes2</zorder>
+  <zorder>skiDes3</zorder>
+  <zorder>enemyAttcakLabel</zorder>
  </widget>
  <customwidgets>
   <customwidget>

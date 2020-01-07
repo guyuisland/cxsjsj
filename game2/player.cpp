@@ -1,10 +1,11 @@
 ﻿#include "player.h"
+#include <QDebug>
 
 Player::Player(std::string myName,int lv)
 {
     monster.resize(3, nullptr);
     HP=1;
-    MP=0;
+    MP=10;
     name=myName;
     level=lv;
     crazy=false;
@@ -70,7 +71,13 @@ void Player::dec_MP(int mp){
 }
 
 int Player::monster_num(){
-    return monster.size();
+    int num = 0;
+    for(int i = 0; i < 3; i++)
+    {
+        if(monster[i] != nullptr)
+            ++num;
+    }
+    return num;
 }
 
 int Player::get_HP(){
@@ -104,16 +111,16 @@ int Player::get_lv(){
     return level;
 }
 
-void Player::dec_monster_HP(int pos)
+int Player::dec_monster_HP(int pos)
 {
     if(monster[pos]->dec_HP(1)){
-        delete monster[pos];
-        monster[pos] = nullptr;
-        empty_slot++;
-        return;
+//        delete monster[pos];
+//        monster[pos] = nullptr;
+//        empty_slot++;
+        return 0;
     }
     else{
-        return;
+        return 1;
     }
 
 }
@@ -149,16 +156,19 @@ int Player::add_new_monster(Monster* mp)
 Skill Player::pos_i_skill_j(int i, int j){
     switch (j) {
     case 0:{
-        return monster[i]->skill1();
+        return monster[i - 1]->skill1();
     }
     case 1:{
-        return monster[i]->skill1();
+        return monster[i - 1]->skill2();
     }
     case 2:{
-        return monster[i]->skill1();
+        return monster[i - 1]->skill3();
+    }
+    case 3:{
+        return monster[i - 1]->skill4();
     }
     }
-    return monster[i]->skill1();
+    return monster[i - 1]->skill1();
 }
 
 void Player::add_buff(int addBuff, int round){
@@ -202,11 +212,11 @@ void Player::add_HP(Skill s, int pos){
         }
     }
     else{
-        monster[pos]->add_HP(addHP);
+        monster[pos - 1]->add_HP(addHP);
     }
     return;
 }
-void Player::ski_attack_monster_HP(Skill s, int pos, bool revive){//pos = -1是反弹
+void Player::ski_attack_monster_HP(Skill &s, int pos){//pos = -1是反弹
     int flag = -1;
     for(unsigned int i=0;i < monster.size();i++){
         if(monster[i]!=nullptr){
@@ -229,8 +239,9 @@ void Player::ski_attack_monster_HP(Skill s, int pos, bool revive){//pos = -1是�
     if(s.get_group()){
         for(unsigned int i=0;i < monster.size();i++){
             if(monster[i]!=nullptr){
-                 monster[i]->dec_HP(damage);
+                monster[i]->dec_HP(damage);
             }
+
         }
         return;
     }
@@ -239,12 +250,7 @@ void Player::ski_attack_monster_HP(Skill s, int pos, bool revive){//pos = -1是�
             pos = flag;
         }
         if(monster[pos]!=nullptr){
-            if(monster[pos]->dec_HP(damage)){
-                if(monster[pos]->get_name()=="Phoenix" && revive){
-                    monster[pos]->add_HP(1000);
-                }
-            }
-
+            monster[pos]->dec_HP(damage);
         }
         return;
     }
@@ -259,7 +265,8 @@ int Player::rebound_aim(){
 }
 void Player::delete_dead_monster(){
     for(unsigned int i=0;i<monster.size();i++){
-        if(monster[i]->get_HP() <= 0){
+        if(monster[i] != nullptr && monster[i]->get_HP() <= 0){
+
             delete monster[i];
             monster[i] = nullptr;
         }
@@ -295,4 +302,18 @@ void Player::get_dead_monster(std::vector<int>& vecMon)
                 vecMon.emplace_back(i + 1);
         }
     }
+}
+void Player::monster_revive(Skill s){
+    if(s.get_revive()){
+        for(unsigned int i=0; i<3; i++){
+            if(monster[i] != nullptr)
+            {
+                if(monster[i]->get_HP() <= 0 && monster[i]->get_name() == "mage"){
+                    monster[i]->add_HP(1000);
+                }
+
+            }
+        }
+    }
+    return;
 }

@@ -38,8 +38,9 @@ public:
 
     void surrender();
     int monster_num();
-    void dec_monster_HP(int );
-    void ski_attack_monster_HP(Skill s, int pos, bool revive);
+    int dec_monster_HP(int );
+    void ski_attack_monster_HP(Skill &s, int pos);
+    void monster_revive(Skill s);
     void get_dead_monster(std::vector<int>&);
     //反弹攻击目标
     int rebound_aim();

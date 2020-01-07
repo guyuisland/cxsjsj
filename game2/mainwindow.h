@@ -54,6 +54,7 @@ private:
     QTimer *timer;
     QLabel *rebound;
     void attack();
+    QLabel *myOptLabel = new QLabel(this);
 };
 
 #endif // MAINWINDOW_H

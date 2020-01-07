@@ -9,6 +9,9 @@
 #include"monsterfactory.h"
 #include "clientsocket.h"
 #include <unordered_map>
+#include <QEventLoop>
+
+
 
 namespace Ui {
 class Fightenv;
@@ -45,6 +48,8 @@ public:
 
     int has_obj(int , int);
     int verify_option(int , int , int);
+    int mon_maxHP(int);
+    void delay(int);
 
     //根据UI获得选择转到相应处理逻辑
     void dispatch(int , int , int );
@@ -62,32 +67,36 @@ signals:
     void on_my_attack(int );
     void on_my_defend();
     void on_my_acc();//我方蓄气
-    void on_my_summon(int );//我方召唤
+    void on_my_summon(int, int );//我方召唤
     void on_my_monster_dead(int );
     void on_my_skill(int , int);
     void on_my_surrender();
     void on_my_win();
     void on_my_lose();
     void on_my_rebound();
-    void on_my_evade(int );
+    void on_my_evade();
     void on_my_heal(int );
-    void on_update_my_HP(int , int, int);
-    void on_update_my_MP(int);
+    void on_update_my_HP();
+    void on_update_my_MP();
 
     void on_opp_attack(int );
     void on_opp_defend();
     void on_opp_acc();//对方蓄气
-    void on_opp_summon(int );//对方召唤
+    void on_opp_summon(int, int );//对方召唤
     void on_opp_monster_dead(int );
     void on_opp_skill(int , int);
     void on_opp_surrender();
     void on_opp_rebound();
-    void on_opp_evade(int );
+    void on_opp_evade();
     void on_opp_heal(int );
-    void on_update_opp_HP(int , int, int);
-    void on_update_opp_MP(int);
+    void on_update_opp_HP();
+    void on_update_opp_MP();
 
     void on_serv_timeout();//服务器超时
+
+
+    void on_back();
+    void on_button_visible();
 
 private slots:
     void round_handle();

@@ -16,6 +16,7 @@ public:
     int get_No();
     int get_cost();
     int get_HP();
+    int get_MaxHP();
     int get_times();
     int get_MP_cost(int );
     bool dec_HP(int num);
@@ -24,6 +25,7 @@ public:
     virtual Skill skill1() = 0;
     virtual Skill skill2() = 0;
     virtual Skill skill3() = 0;
+    virtual Skill skill4() = 0;
 protected:
     int max_HP;
     int cur_HP;
@@ -34,14 +36,15 @@ protected:
     int No;
 };
 
-class Mage: public Monster
+class Flareon: public Monster
 {
 public:
-    Mage();
-    ~Mage();
+    Flareon();
+    ~Flareon();
     Skill skill1() override;
     Skill skill2() override;
     Skill skill3() override;
+    Skill skill4() override;
 
 private:
     //std::vector<Skill> skills;
@@ -55,30 +58,33 @@ public:
     Skill skill1() override;
     Skill skill2() override;
     Skill skill3() override;
+    Skill skill4() override;
 private:
     //std::vector<Skill> skills;
 };
 
-class Pegasus: public Monster
+class Pikachu: public Monster
 {
 public:
-    Pegasus();
-    ~Pegasus();
+    Pikachu();
+    ~Pikachu();
     Skill skill1() override;
     Skill skill2() override;
     Skill skill3() override;
+    Skill skill4() override;
 private:
     //std::vector<Skill> skills;
 };
 
-class Scorpicore: public Monster
+class Greninja: public Monster
 {
 public:
-    Scorpicore();
-    ~Scorpicore();
+    Greninja();
+    ~Greninja();
     Skill skill1() override;
     Skill skill2() override;
     Skill skill3() override;
+    Skill skill4() override;
 private:
     //std::vector<Skill> skills;
 };
@@ -91,18 +97,20 @@ public:
     Skill skill1() override;
     Skill skill2() override;
     Skill skill3() override;
+    Skill skill4() override;
 private:
     //std::vector<Skill> skills;
 };
 
-class Knight: public Monster
+class Dragonite: public Monster
 {
 public:
-    Knight();
-    ~Knight();
+    Dragonite();
+    ~Dragonite();
     Skill skill1() override;
     Skill skill2() override;
     Skill skill3() override;
+    Skill skill4() override;
 private:
     //std::vector<Skill> skills;
 };
